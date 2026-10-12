@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Platform Views use framework tint attributes. This root owns overlays, focus and insets. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MergeRootFrame,UseAppTint"
+    android:id="@+id/root"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:focusableInTouchMode="true"
+    android:defaultFocusHighlightEnabled="false">
+
+    <FrameLayout android:id="@+id/content"
+        android:layout_width="match_parent" android:layout_height="match_parent" />
+
+    <FrameLayout android:id="@+id/toolbar"
+        android:layout_width="match_parent" android:layout_height="@dimen/toolbar_height"
+        android:layout_gravity="bottom" android:background="@color/surface"
+        android:elevation="4dp">
+
+        <LinearLayout android:id="@+id/navigation_row"
+            android:layout_width="match_parent" android:layout_height="match_parent"
+            android:gravity="center_vertical" android:paddingHorizontal="4dp">
+            <ImageButton android:id="@+id/back" style="@style/ToolbarButton"
+                android:src="@drawable/ic_back" android:contentDescription="@string/back" />
+            <ImageButton android:id="@+id/forward" style="@style/ToolbarButton"
+                android:src="@drawable/ic_forward" android:contentDescription="@string/forward" />
+            <TextView android:id="@+id/address"
+                android:layout_width="0dp" android:layout_height="34dp" android:layout_weight="1"
+                android:gravity="center_vertical" android:paddingHorizontal="10dp"
+                android:singleLine="true" android:ellipsize="end"
+                android:textColor="@color/text" android:textSize="13sp"
+                android:background="@drawable/address_background"
+                android:contentDescription="@string/address" android:clickable="true" android:focusable="true" />
+            <FrameLayout android:id="@+id/tabs"
+                android:layout_width="40dp" android:layout_height="match_parent"
+                android:background="@drawable/tool_button"
+                android:clickable="true" android:focusable="true" android:contentDescription="@string/tabs">
+                <ImageView android:id="@+id/tab_icon"
+                    android:layout_width="23dp" android:layout_height="23dp"
+                    android:layout_gravity="center" android:src="@drawable/ic_tabs"
+                    android:tint="@color/text" android:importantForAccessibility="no" />
+                <TextView android:id="@+id/tab_count"
+                    android:layout_width="23dp" android:layout_height="23dp" android:layout_gravity="center"
+                    android:gravity="center" android:textColor="@color/text" android:textSize="11sp"
+                    android:fontFamily="sans-serif-medium" android:importantForAccessibility="no" />
+            </FrameLayout>
+            <ImageButton android:id="@+id/more" style="@style/ToolbarButton"
+                android:src="@drawable/ic_more" android:contentDescription="@string/more" />
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/find_row"
+            android:layout_width="match_parent" android:layout_height="match_parent"
+            android:gravity="center_vertical" android:paddingHorizontal="4dp"
+            android:visibility="gone">
+            <ImageButton android:id="@+id/close_find" style="@style/ToolbarButton"
+                android:src="@drawable/ic_close" android:contentDescription="@string/close_find" />
+            <net.conw.unit.browser.ui.BrowserInput android:id="@+id/find_input"
+                android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                android:singleLine="true" android:hint="@string/find_hint" android:textSize="15sp"
+                android:textColor="@color/text" android:textColorHint="@color/muted"
+                android:inputType="text" android:imeOptions="actionNext|flagNoExtractUi"
+                android:importantForAutofill="no"
+                android:background="@android:color/transparent" android:paddingHorizontal="8dp" />
+            <TextView android:id="@+id/find_count"
+                android:layout_width="wrap_content" android:layout_height="match_parent"
+                android:gravity="center" android:text="@string/match_empty" android:textSize="12sp"
+                android:textColor="@color/muted" android:paddingHorizontal="4dp"
+                android:accessibilityLiveRegion="polite" />
+            <ImageButton android:id="@+id/find_previous" style="@style/ToolbarButton"
+                android:src="@drawable/ic_up" android:contentDescription="@string/previous_match" />
+            <ImageButton android:id="@+id/find_next" style="@style/ToolbarButton"
+                android:src="@drawable/ic_down" android:contentDescription="@string/next_match" />
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/address_row"
+            android:layout_width="match_parent" android:layout_height="match_parent"
+            android:gravity="center_vertical" android:paddingHorizontal="4dp" android:visibility="gone">
+            <ImageButton android:id="@+id/cancel_address" style="@style/ToolbarButton"
+                android:src="@drawable/ic_close" android:contentDescription="@string/cancel_editing" />
+            <net.conw.unit.browser.ui.BrowserInput android:id="@+id/address_input"
+                android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                android:background="@android:color/transparent" android:paddingHorizontal="8dp"
+                android:singleLine="true" android:textSize="16sp" android:textColor="@color/text"
+                android:textColorHint="@color/muted" android:hint="@string/address_hint"
+                android:inputType="textUri" android:imeOptions="actionGo|flagNoExtractUi" android:selectAllOnFocus="true"
+                android:importantForAutofill="no" />
+            <ImageButton android:id="@+id/clear_address" style="@style/ToolbarButton"
+                android:src="@drawable/ic_erase" android:contentDescription="@string/clear_address" />
+            <ImageButton android:id="@+id/go_address" style="@style/ToolbarButton"
+                android:src="@drawable/ic_go" android:tint="@color/accent" android:contentDescription="@string/go" />
+        </LinearLayout>
+        <ProgressBar android:id="@+id/progress" style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent" android:layout_height="2dp" android:layout_gravity="top"
+            android:progressTint="@color/accent" android:visibility="gone" android:elevation="5dp" />
+    </FrameLayout>
+</FrameLayout>

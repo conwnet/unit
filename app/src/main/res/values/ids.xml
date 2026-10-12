@@ -1,0 +1,29 @@
+<resources>
+    <item name="menu_panel" type="id" />
+    <item name="zoom_slider" type="id" />
+    <item name="sheet" type="id" />
+    <item name="panel_search_input" type="id" />
+    <item name="download_delete_file" type="id" />
+    <item name="proxy_enabled" type="id" />
+    <item name="proxy_type" type="id" />
+    <item name="proxy_host" type="id" />
+    <item name="proxy_port" type="id" />
+    <item name="proxy_username" type="id" />
+    <item name="proxy_password" type="id" />
+    <item name="proxy_bypass" type="id" />
+    <item name="proxy_notice" type="id" />
+    <item name="debug_input" type="id" />
+    <item name="debug_console" type="id" />
+    <item name="debug_run" type="id" />
+    <item name="debug_status" type="id" />
+    <item name="page_source" type="id" />
+    <item name="user_agent_input" type="id" />
+    <item name="scan_preview" type="id" />
+    <item name="scan_hint" type="id" />
+    <item name="scan_image" type="id" />
+    <item name="scan_camera" type="id" />
+    <item name="scan_choices" type="id" />
+    <item name="scan_progress" type="id" />
+    <item name="language_input" type="id" />
+    <item name="text_size_slider" type="id" />
+</resources>

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Home</title>
+  <link rel="stylesheet" href="/home.css">
+  <script src="/home.js" defer></script>
+</head>
+<body>
+  <main>
+    <header class="brand">
+      <img src="/logo.svg" width="42" height="42" alt="">
+      <h1 id="name">Unit</h1>
+    </header>
+    <p id="private-note" class="private-note" hidden>History isn't saved in this session.</p>
+    <form class="search" action="/open" method="get" role="search">
+      <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg>
+      <input name="q" type="text" inputmode="url" enterkeyhint="go" autocomplete="off" autocapitalize="off"
+        spellcheck="false" placeholder="Search or enter address" aria-label="Search or enter address">
+      <button type="submit" aria-label="Go"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"></path></svg></button>
+    </form>
+    <section class="bookmarks" aria-labelledby="bookmarks-heading">
+      <div class="section-heading">
+        <h2 id="bookmarks-heading">Bookmarks</h2>
+        <a id="view-all" href="/bookmarks" hidden>View all</a>
+      </div>
+      <div id="sites" class="sites"></div>
+      <p id="empty" class="empty">Your favorite sites, a tap away.<br><span>Saved bookmarks appear here.</span></p>
+    </section>
+  </main>
+  <script type="application/json" id="home-data">__HOME_DATA__</script>
+</body>
+</html>

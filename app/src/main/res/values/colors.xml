@@ -1,0 +1,12 @@
+<resources>
+    <color name="background">#FAFBFD</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_variant">#F0F3F7</color>
+    <color name="text">#1D2633</color>
+    <color name="muted">#657287</color>
+    <color name="accent">#4668CB</color>
+    <color name="divider">#E6EBF2</color>
+    <color name="ripple">#185277DA</color>
+    <color name="debug_warning">#946200</color>
+    <color name="debug_error">#B83D48</color>
+</resources>

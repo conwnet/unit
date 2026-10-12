@@ -1,0 +1,96 @@
+<resources>
+    <style name="Theme.Unit.Base" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
+    <style name="Theme.Unit" parent="Theme.Unit.Base">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:colorAccent">@color/accent</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:colorBackground">@color/background</item>
+        <item name="android:statusBarColor">@color/background</item>
+        <item name="android:navigationBarColor">@color/surface</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+    </style>
+    <style name="Theme.Unit.Dialog" parent="Theme.Material3.DayNight.Dialog.Alert">
+        <item name="colorPrimary">@color/accent</item>
+        <item name="colorOnPrimary">@color/surface</item>
+        <item name="colorSecondary">@color/accent</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorSurfaceContainerHigh">@color/surface</item>
+        <item name="colorSurfaceContainerHighest">@color/surface</item>
+        <item name="colorSurfaceVariant">@color/surface_variant</item>
+        <item name="colorOnSurface">@color/text</item>
+        <item name="colorOnSurfaceVariant">@color/muted</item>
+        <item name="colorOutline">@color/divider</item>
+        <item name="android:colorAccent">@color/accent</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="elevationOverlayEnabled">false</item>
+        <item name="colorControlHighlight">@color/ripple</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.Unit.Dialog</item>
+        <item name="textInputStyle">@style/Unit.Dialog.Input</item>
+        <item name="editTextStyle">@style/Widget.Material3.TextInputEditText.OutlinedBox</item>
+        <item name="shapeAppearanceCornerExtraLarge">@style/Unit.Dialog.Shape</item>
+    </style>
+    <style name="ThemeOverlay.Unit.Dialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="android:backgroundDimAmount">0.28</item>
+        <item name="alertDialogStyle">@style/Unit.Dialog.Container</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/Unit.Dialog.Title</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/Unit.Dialog.Body</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Unit.Dialog.PrimaryButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Unit.Dialog.SecondaryButton</item>
+        <item name="buttonBarNeutralButtonStyle">@style/Unit.Dialog.SecondaryButton</item>
+    </style>
+    <style name="Unit.Dialog.Container" parent="MaterialAlertDialog.Material3">
+        <item name="backgroundTint">@color/surface</item>
+        <item name="shapeAppearance">@style/Unit.Dialog.Shape</item>
+        <item name="shapeAppearanceOverlay">@null</item>
+    </style>
+    <style name="Unit.Dialog.Title" parent="MaterialAlertDialog.Material3.Title.Text">
+        <item name="android:textSize">22sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/text</item>
+    </style>
+    <style name="Unit.Dialog.Body" parent="MaterialAlertDialog.Material3.Body.Text">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/muted</item>
+    </style>
+    <style name="Unit.Dialog.Button" parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="cornerRadius">14dp</item>
+        <item name="backgroundTint">@android:color/transparent</item>
+        <item name="rippleColor">@color/ripple</item>
+    </style>
+    <style name="Unit.Dialog.PrimaryButton" parent="Unit.Dialog.Button">
+        <item name="android:minWidth">72dp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:insetTop">4dp</item>
+        <item name="android:insetBottom">4dp</item>
+    </style>
+    <style name="Unit.Dialog.SecondaryButton" parent="Unit.Dialog.Button">
+        <item name="android:textColor">@color/muted</item>
+    </style>
+    <style name="Unit.Dialog.Input" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundColor">@color/surface</item>
+        <item name="boxStrokeColor">@color/dialog_input_stroke</item>
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+        <item name="android:textColorHint">@color/muted</item>
+        <item name="hintTextColor">@color/accent</item>
+    </style>
+    <style name="Unit.Dialog.Shape" parent="ShapeAppearance.Material3.Corner.ExtraLarge">
+        <item name="cornerSize">24dp</item>
+    </style>
+    <style name="ToolbarButton">
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:tint">@color/text</item>
+        <item name="android:background">@drawable/tool_button</item>
+    </style>
+</resources>

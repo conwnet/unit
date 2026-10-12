@@ -1,0 +1,35 @@
+# Gradle and Android generated files
+.gradle/
+.kotlin/
+build/
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+*.idsig
+output-metadata.json
+/artifacts/
+
+# Local SDK configuration and signing credentials
+local.properties
+keystore.properties
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.key
+
+# IDE state
+.idea/
+*.iml
+.vscode/
+captures/
+
+# Test tooling, logs and system files
+__pycache__/
+*.py[cod]
+*.log
+*.hprof
+.DS_Store
+Thumbs.db
