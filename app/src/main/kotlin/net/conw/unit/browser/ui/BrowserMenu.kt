@@ -12,6 +12,7 @@ import android.widget.FrameLayout
 import android.widget.HorizontalScrollView
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.core.view.doOnLayout
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import net.conw.unit.BrowserActivity
@@ -25,6 +26,7 @@ import net.conw.unit.ui.Ui
 internal class BrowserMenu(private val activity: BrowserActivity, private val root: FrameLayout) {
     private val popup =
         BrowserPopup(activity, root, anchor = activity.toolbar.view.findViewById(R.id.more))
+    private var page = 0
 
     fun show() {
         activity.proxyNotice.dismiss()
@@ -87,13 +89,14 @@ internal class BrowserMenu(private val activity: BrowserActivity, private val ro
                     }
                 }
             pager.pageChanged = { selected ->
+                page = selected
                 dots.forEachIndexed { index, dot ->
                     dot.alpha = if (index == selected) 1f else .22f
                 }
             }
             panel.addView(indicators)
         }
-        pager.showPage(0)
+        pager.doOnLayout { pager.showPage(page, smooth = false) }
         popup.show(panel, width)
     }
 
@@ -278,9 +281,9 @@ private class MenuPager(
         overScrollMode = View.OVER_SCROLL_NEVER
     }
 
-    fun showPage(index: Int) {
+    fun showPage(index: Int, smooth: Boolean = true) {
         page = index.coerceIn(0, pageCount - 1)
-        smoothScrollTo(page * pageWidth, 0)
+        if (smooth) smoothScrollTo(page * pageWidth, 0) else scrollTo(page * pageWidth, 0)
         pageChanged?.invoke(page)
     }
 
