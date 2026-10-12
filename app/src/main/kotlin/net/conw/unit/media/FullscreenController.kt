@@ -261,10 +261,10 @@ internal class FullscreenController(
         val bottomPadding = if (fill) 0 else maxOf(0, insetBottom - imeBottom)
         toolbarParams.height = toolbarHeight + bottomPadding
         toolbarParams.bottomMargin = maxOf(if (fill) dp(12) else 0, imeBottom)
-        toolbarParams.leftMargin = if (fill) dp(12) else insetLeft
-        toolbarParams.rightMargin = if (fill) dp(12) else insetRight
+        toolbarParams.leftMargin = if (fill) dp(12) else 0
+        toolbarParams.rightMargin = if (fill) dp(12) else 0
         toolbar.layoutParams = toolbarParams
-        toolbar.setPadding(0, 0, 0, bottomPadding)
+        toolbar.setPadding(left, 0, right, bottomPadding)
         toolbar.background = Ui.background(activity, R.color.surface, if (fill) 18 else 0)
         if (video) toolbar.visibility = View.GONE
     }
