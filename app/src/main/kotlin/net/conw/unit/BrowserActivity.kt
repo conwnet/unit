@@ -300,6 +300,7 @@ open class BrowserActivity : Activity() {
     internal fun progress(value: Int) {
         progressBar.progress = value
         progressBar.visibility = if (value < 100) View.VISIBLE else View.GONE
+        if (value >= 100) menu.refresh()
     }
 
     internal fun save() {

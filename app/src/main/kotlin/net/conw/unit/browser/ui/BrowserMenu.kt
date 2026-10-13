@@ -14,6 +14,7 @@ import android.widget.FrameLayout
 import android.widget.HorizontalScrollView
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.core.view.doOnLayout
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -26,8 +27,11 @@ import net.conw.unit.proxy.ProxyDialog
 import net.conw.unit.ui.Ui
 
 internal class BrowserMenu(private val activity: BrowserActivity, private val root: FrameLayout) {
+    private val updates = mutableListOf<(Action) -> Unit>()
     private val popup =
-        BrowserPopup(activity, root, anchor = activity.toolbar.view.findViewById(R.id.more))
+        BrowserPopup(activity, root, anchor = activity.toolbar.view.findViewById(R.id.more)).apply {
+            onDismiss = updates::clear
+        }
     private var page = 0
 
     fun show() {
@@ -104,22 +108,23 @@ internal class BrowserMenu(private val activity: BrowserActivity, private val ro
 
     fun dismiss(): Boolean = popup.dismiss()
 
+    fun refresh() {
+        if (popup.isShowing)
+            actions().forEachIndexed { index, action -> updates[index](action) }
+    }
+
     private fun cell(action: Action): View =
         Ui.column(activity).apply {
             gravity = Gravity.CENTER_HORIZONTAL
             setPadding(dp(3), dp(10), dp(3), dp(6))
-            val color = if (action.active == true) R.color.accent else R.color.text
             addView(
                 ImageView(activity).apply {
-                    setImageResource(action.icon)
-                    imageTintList =
-                        android.content.res.ColorStateList.valueOf(activity.getColor(color))
                     importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
                 },
                 LinearLayout.LayoutParams(dp(23), dp(23)),
             )
             addView(
-                Ui.text(activity, action.label, 12, color).apply {
+                Ui.text(activity, action.label, 12, R.color.text).apply {
                     gravity = Gravity.CENTER
                     maxLines = 1
                     includeFontPadding = false
@@ -134,23 +139,36 @@ internal class BrowserMenu(private val activity: BrowserActivity, private val ro
                 },
                 LinearLayout.LayoutParams(-1, dp(20)).apply { topMargin = dp(6) },
             )
-            background =
-                Ui.ripple(
-                    activity,
-                    if (action.active == true) R.color.surface_variant else R.color.surface,
-                    12,
-                )
-            contentDescription = activity.getString(action.label)
-            if (android.os.Build.VERSION.SDK_INT >= 30 && action.active != null)
-                stateDescription =
-                    activity.getString(if (action.active) R.string.on else R.string.off)
-            isEnabled = action.enabled
-            alpha = if (isEnabled) 1f else .3f
-            isFocusable = isEnabled
-            setOnClickListener {
-                dismiss()
-                action.run()
+            updates.add { action ->
+                val color = if (action.active == true) R.color.accent else R.color.text
+                (getChildAt(0) as ImageView).apply {
+                    setImageResource(action.icon)
+                    imageTintList =
+                        android.content.res.ColorStateList.valueOf(activity.getColor(color))
+                }
+                (getChildAt(1) as TextView).apply {
+                    setText(action.label)
+                    setTextColor(activity.getColor(color))
+                }
+                background =
+                    Ui.ripple(
+                        activity,
+                        if (action.active == true) R.color.surface_variant else R.color.surface,
+                        12,
+                    )
+                contentDescription = activity.getString(action.label)
+                if (android.os.Build.VERSION.SDK_INT >= 30 && action.active != null)
+                    stateDescription =
+                        activity.getString(if (action.active) R.string.on else R.string.off)
+                isEnabled = action.enabled
+                alpha = if (isEnabled) 1f else .3f
+                isFocusable = isEnabled
+                setOnClickListener {
+                    dismiss()
+                    action.run()
+                }
             }
+            updates.last()(action)
         }
 
     private fun actions(): List<Action> {
