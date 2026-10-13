@@ -154,9 +154,10 @@ internal class BrowserMenu(private val activity: BrowserActivity, private val ro
         }
 
     private fun actions(): List<Action> {
+        val tab = activity.current()
         val fullscreen = activity.fullscreen.isFullscreen
         val webpage = UrlUtils.isWeb(activity.currentUrl())
-        val loading = activity.current()?.web?.progress?.let { it < 100 } == true
+        val loading = tab?.web?.progress?.let { it < 100 } == true
         return listOf(
             Action(R.string.bookmarks, R.drawable.ic_bookmark) { activity.dialogs.pages(true) },
             Action(R.string.history, R.drawable.ic_history, enabled = !activity.isIncognito) {
@@ -171,7 +172,12 @@ internal class BrowserMenu(private val activity: BrowserActivity, private val ro
                 activity.preferences.desktop = !activity.preferences.desktop
                 activity.current()?.reload()
             },
-            Action(R.string.zoom, R.drawable.ic_zoom_in, enabled = webpage && !loading) {
+            Action(
+                R.string.zoom,
+                R.drawable.ic_zoom_in,
+                active = tab?.let { (it.scale / it.initialScale * 100).roundToInt() != 100 } == true,
+                enabled = webpage && !loading,
+            ) {
                 activity.zoom.show()
             },
             Action(R.string.proxy, R.drawable.ic_proxy, active = activity.proxy.enabled) {
@@ -224,6 +230,7 @@ internal class BrowserMenu(private val activity: BrowserActivity, private val ro
             Action(
                 R.string.text,
                 R.drawable.ic_text_size,
+                active = (tab?.web?.settings?.textZoom ?: activity.preferences.textSize) != 100,
                 enabled = webpage && !loading,
             ) {
                 activity.textSize.show()
