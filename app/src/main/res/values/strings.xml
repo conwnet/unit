@@ -234,10 +234,6 @@
     <string name="clear_languages">Clear languages</string>
     <string name="reader">Reader</string>
     <string name="reader_unavailable">No readable article found on this page.</string>
-    <string name="videos">Videos</string>
-    <string name="video_description">Download a direct video file from this page.</string>
-    <string name="video_unavailable">No direct video file found.</string>
-    <string name="video_unsupported">This source is not a supported direct video file.</string>
     <string name="play_on">PlayOn</string>
     <string name="play_on_enabled">Allow background video and audio playback.</string>
     <string name="play_on_disabled">Restore default background playback behavior.</string>

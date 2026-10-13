@@ -17,7 +17,6 @@ import java.io.IOException
 import java.util.concurrent.Executors
 import net.conw.unit.BrowserActivity
 import net.conw.unit.R
-import net.conw.unit.browser.page.BrowserVideos
 import net.conw.unit.data.BrowserStore
 import net.conw.unit.proxy.ProxyClient
 import okhttp3.Call
@@ -192,17 +191,12 @@ class DownloadService : Service() {
                         val body = response.body
                         val mime =
                             body.contentType()?.let { "${it.type}/${it.subtype}" } ?: row.mime
-                        if (
-                            session.video &&
-                                !BrowserVideos.isDirect(response.request.url.toString(), mime)
-                        )
-                            throw java.io.IOException(getString(R.string.video_unsupported))
                         row =
                             row.copy(
                                 total = body.contentLength(),
                                 mime = mime,
                                 name =
-                                    if (mime?.startsWith("image/") == true || session.video)
+                                    if (mime?.startsWith("image/") == true)
                                         DownloadFiles.name(
                                             response.request.url.toString(),
                                             response.header("Content-Disposition"),

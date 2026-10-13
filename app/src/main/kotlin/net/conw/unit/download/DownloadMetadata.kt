@@ -7,8 +7,6 @@ import java.io.IOException
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
-import net.conw.unit.R
-import net.conw.unit.browser.page.BrowserVideos
 import net.conw.unit.proxy.ProxyClient
 import okhttp3.Call
 
@@ -41,8 +39,6 @@ internal class DownloadMetadata(context: Context) {
                     .use { response ->
                         val mime = response.body.contentType()?.let { "${it.type}/${it.subtype}" }
                         val address = response.request.url.toString()
-                        if (session.video && !BrowserVideos.isDirect(address, mime))
-                            throw IOException(context.getString(R.string.video_unsupported))
                         FileInfo(
                             DownloadFiles.name(
                                 address,

@@ -19,7 +19,6 @@ import net.conw.unit.BrowserActivity
 import net.conw.unit.R
 import net.conw.unit.browser.UrlUtils
 import net.conw.unit.browser.page.BrowserPageTools
-import net.conw.unit.browser.page.BrowserVideos
 import net.conw.unit.proxy.ProxyDialog
 import net.conw.unit.ui.Ui
 
@@ -200,13 +199,6 @@ internal class BrowserMenu(private val activity: BrowserActivity, private val ro
                 enabled = !loading,
             ) {
                 activity.reader.toggle()
-            },
-            Action(
-                R.string.videos,
-                R.drawable.ic_video,
-                enabled = webpage && activity.current()?.isHome != true,
-            ) {
-                BrowserVideos(activity).show()
             },
             Action(
                 R.string.play_on,

@@ -11,7 +11,6 @@ import net.conw.unit.proxy.ProxySettings
 internal data class DownloadSession(
     val proxy: ProxySettings,
     val headers: DownloadRequest.Headers = DownloadRequest.Headers(),
-    val video: Boolean = false,
 ) {
     fun applyTo(intent: Intent): Intent =
         intent
@@ -31,14 +30,12 @@ internal data class DownloadSession(
             .putExtra("cookie", headers.cookie)
             .putExtra("referer", headers.referer)
             .putExtra("language", headers.language)
-            .putExtra("video", video)
 
     companion object {
         fun capture(
             activity: BrowserActivity,
             url: String,
             userAgent: String?,
-            video: Boolean = false,
         ): DownloadSession {
             val referer =
                 activity.currentUrl().takeIf {
@@ -52,7 +49,6 @@ internal data class DownloadSession(
                     referer,
                     activity.languages.header(),
                 ),
-                video,
             )
         }
 
@@ -74,7 +70,6 @@ internal data class DownloadSession(
                     intent.getStringExtra("referer"),
                     intent.getStringExtra("language"),
                 ),
-                intent.getBooleanExtra("video", false),
             )
         }
     }

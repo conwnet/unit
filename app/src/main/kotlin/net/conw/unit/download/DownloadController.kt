@@ -23,17 +23,13 @@ internal class DownloadController(private val activity: BrowserActivity) {
         disposition: String?,
         mime: String?,
         image: Boolean = false,
-        video: Boolean = false,
     ) {
         if (!UrlUtils.isWeb(url)) {
             activity.message(R.string.unsupported_download)
             return
         }
         stopLookup()
-        val lookup = image || video
-        var filename =
-            if (lookup) if (video) "video" else "image"
-            else DownloadFiles.name(url, disposition, mime)
+        var filename = if (image) "image" else DownloadFiles.name(url, disposition, mime)
         var resolvedMime = mime
         val privateNote =
             if (activity.isIncognito) activity.getString(R.string.private_download_note) else ""
@@ -41,12 +37,12 @@ internal class DownloadController(private val activity: BrowserActivity) {
             Ui.dialog(activity)
                 .setTitle(R.string.download_file)
                 .setMessage(
-                    (if (lookup) activity.getString(R.string.download_checking)
+                    (if (image) activity.getString(R.string.download_checking)
                     else activity.getString(R.string.download_prompt, filename)) + privateNote
                 )
                 .setPositiveButton(R.string.download) { _, _ ->
                     fun begin() {
-                        enqueue(url, userAgent, filename, resolvedMime, video)
+                        enqueue(url, userAgent, filename, resolvedMime)
                     }
                     if (Build.VERSION.SDK_INT <= 28)
                         activity.requests.permissions(
@@ -64,7 +60,7 @@ internal class DownloadController(private val activity: BrowserActivity) {
                 }
                 .setNegativeButton(R.string.cancel, null)
                 .create()
-        if (!lookup) {
+        if (!image) {
             activity.showDialog(dialog)
             return
         }
@@ -77,7 +73,7 @@ internal class DownloadController(private val activity: BrowserActivity) {
             }
         }
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
-        val session = DownloadSession.capture(activity, url, userAgent, video)
+        val session = DownloadSession.capture(activity, url, userAgent)
         metadata.lookup(url, session) { information ->
             if (!dialog.isShowing) return@lookup
             val message =
@@ -88,15 +84,11 @@ internal class DownloadController(private val activity: BrowserActivity) {
                         activity.getString(R.string.download_prompt, name)
                     },
                     onFailure = {
-                        activity.getString(
-                            if (video) R.string.video_unsupported
-                            else R.string.download_info_unavailable
-                        )
+                        activity.getString(R.string.download_info_unavailable)
                     },
                 )
             dialog.setMessage(message + privateNote)
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
-                !video || information.isSuccess
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = true
         }
     }
 
@@ -105,11 +97,10 @@ internal class DownloadController(private val activity: BrowserActivity) {
         userAgent: String?,
         filename: String,
         mime: String?,
-        video: Boolean = false,
     ): Boolean {
         var download: Download? = null
         return try {
-            val session = DownloadSession.capture(activity, url, userAgent, video)
+            val session = DownloadSession.capture(activity, url, userAgent)
             require(session.proxy.valid())
             val row = activity.store.addDownload(url, filename, mime, activity.isIncognito)
             download = row
@@ -141,7 +132,6 @@ internal class DownloadController(private val activity: BrowserActivity) {
             activity.userAgent(),
             download.name,
             download.mime,
-            video = download.mime?.startsWith("video/") == true,
         )
 
     private fun stopLookup() {
