@@ -226,13 +226,6 @@ internal class BrowserMenu(private val activity: BrowserActivity, private val ro
                 BrowserPageTools(activity).debug()
             },
             Action(
-                R.string.source,
-                R.drawable.ic_source,
-                enabled = activity.current()?.web != null && !loading,
-            ) {
-                BrowserPageTools(activity).source()
-            },
-            Action(
                 R.string.export,
                 R.drawable.ic_pdf,
                 enabled =

@@ -87,6 +87,11 @@ internal class BrowserDebug(private val activity: BrowserActivity) {
         private val render = Runnable { refreshConsole() }
 
         fun show() {
+            sheet.actions.addView(
+                Ui.iconButton(activity, R.drawable.ic_source, R.string.view_source) {
+                    BrowserPageTools(activity).source()
+                }
+            )
             sheet.body.setPadding(dp(16), 0, dp(16), 0)
             sheet.body.addView(createContent(), FrameLayout.LayoutParams(-1, -1))
             sheet.footer.setPadding(dp(18), dp(12), dp(16), dp(16))
