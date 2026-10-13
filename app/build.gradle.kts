@@ -17,6 +17,10 @@ android {
         versionCode = 1
         versionName = "0.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        resourceConfigurations += listOf(
+            "en", "en-rAU", "en-rCA", "en-rGB", "en-rIN",
+            "zh-rCN", "zh-rHK", "zh-rTW",
+        )
     }
     buildTypes {
         debug {
