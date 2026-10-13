@@ -1,5 +1,6 @@
 package net.conw.unit.data
 
+import net.conw.unit.browser.HomePage
 import net.conw.unit.browser.UrlUtils
 
 /** Persisted browsing preferences apply on the next page load. */
@@ -9,8 +10,8 @@ internal class BrowserPreferences(private val store: BrowserStore) {
         set(value) = store.put("search", value)
 
     var homePage: String
-        get() = store.get("start_url", "")
-        set(value) = store.put("start_url", value)
+        get() = store.get("home_page", "")
+        set(value) = store.put("home_page", value)
 
     var userAgent: String
         get() = store.get("user_agent", "")
@@ -39,7 +40,8 @@ internal class BrowserPreferences(private val store: BrowserStore) {
     fun startUrl(incognito: Boolean = false): String {
         if (incognito) return UrlUtils.HOME
         val home = homePage
-        return if (home.isBlank()) UrlUtils.HOME else UrlUtils.resolve(home, searchEngine)
+        return if (home.isBlank() || HomePage.isHtml(home)) UrlUtils.HOME
+        else UrlUtils.resolve(home, searchEngine)
     }
 
     companion object {

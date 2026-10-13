@@ -12,6 +12,10 @@ import org.json.JSONObject
 
 /** Offline content served at an internal HTTPS origin, using the tab's existing WebView. */
 internal class HomePage(private val activity: BrowserActivity) {
+    private val customHtml: String?
+        get() =
+            if (activity.isIncognito) null
+            else activity.preferences.homePage.takeIf(::isHtml)
     private val template by lazy {
         activity.assets.open("home/index.html").bufferedReader().use { it.readText() }
     }
@@ -29,13 +33,14 @@ internal class HomePage(private val activity: BrowserActivity) {
         val path = request.url.path
         if (path == "/") {
             if (!request.isForMainFrame) return error(403, "Forbidden")
-            val html = template.replace("__HOME_DATA__", scriptData(state().toString()))
+            val custom = customHtml
+            val html = custom ?: template.replace("__HOME_DATA__", scriptData(state().toString()))
             return WebResourceResponse(
                 "text/html",
                 "UTF-8",
                 200,
                 "OK",
-                headers,
+                if (custom == null) headers else headers - "Content-Security-Policy",
                 ByteArrayInputStream(html.toByteArray()),
             )
         }
@@ -56,7 +61,7 @@ internal class HomePage(private val activity: BrowserActivity) {
         )
     }
 
-    /** Only the built-in top-level homepage may issue these navigation commands. */
+    /** Only the top-level homepage may issue these navigation commands. */
     fun navigation(view: WebView, request: WebResourceRequest): Boolean {
         if (!internal(request.url)) return false
         if (request.url.toString() == URL && request.isForMainFrame) return false
@@ -120,6 +125,8 @@ internal class HomePage(private val activity: BrowserActivity) {
 
     companion object {
         const val URL = "https://unit.invalid/"
+
+        fun isHtml(value: String) = value.trimStart().startsWith("<")
 
         fun internal(uri: Uri) =
             uri.scheme == "https" && uri.host == "unit.invalid" && uri.port == -1

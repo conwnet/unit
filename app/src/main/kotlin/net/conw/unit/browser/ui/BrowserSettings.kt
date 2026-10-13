@@ -2,6 +2,7 @@ package net.conw.unit.browser.ui
 
 import android.text.InputFilter
 import android.text.InputType
+import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.ScrollView
@@ -9,6 +10,7 @@ import androidx.appcompat.app.AlertDialog
 import net.conw.unit.BrowserActivity
 import net.conw.unit.BuildConfig
 import net.conw.unit.R
+import net.conw.unit.browser.HomePage
 import net.conw.unit.browser.UrlUtils
 import net.conw.unit.data.BrowserPreferences
 import net.conw.unit.ui.Ui
@@ -30,6 +32,7 @@ internal class BrowserSettings(private val activity: BrowserActivity) {
     }
 
     private fun render() {
+        val home = preferences.homePage
         list.removeAllViews()
         list.addView(
             Ui.row(
@@ -44,7 +47,8 @@ internal class BrowserSettings(private val activity: BrowserActivity) {
             Ui.row(
                 activity,
                 activity.getString(R.string.home_page),
-                preferences.homePage.ifEmpty { activity.getString(R.string.default_home) },
+                if (HomePage.isHtml(home)) activity.getString(R.string.home_page_html)
+                else home.ifBlank { activity.getString(R.string.default_home) },
                 icon = R.drawable.ic_home,
                 click = ::editHomePage,
             )
@@ -117,20 +121,30 @@ internal class BrowserSettings(private val activity: BrowserActivity) {
     }
 
     private fun editHomePage() {
-        val input = Ui.textInput(activity, R.string.home_url_hint, preferences.homePage, uri = true)
+        val input =
+            Ui.textInput(activity, R.string.home_page_hint, preferences.homePage, uri = true).apply {
+                setSingleLine(false)
+                minLines = 4
+                maxLines = 6
+                gravity = Gravity.TOP or Gravity.START
+            }
         activity.showDialog(
             Ui.dialog(activity)
                 .setTitle(R.string.home_page)
-                .setMessage(R.string.home_page_message)
                 .setView(
                     Ui.form(activity).apply {
-                        addView(Ui.input(activity, input, R.string.home_url_hint))
+                        addView(
+                            Ui.input(activity, input, R.string.home_page_hint).apply {
+                                isExpandedHintEnabled = false
+                                placeholderText = activity.getString(R.string.home_page_placeholder)
+                            }
+                        )
                     }
                 )
                 .setPositiveButton(R.string.save) { _, _ ->
                     val value = input.text.toString().trim()
                     preferences.homePage =
-                        if (value.isEmpty()) ""
+                        if (value.isEmpty() || HomePage.isHtml(value)) value
                         else UrlUtils.resolve(value, preferences.searchEngine)
                     activity.message(R.string.home_saved)
                     render()

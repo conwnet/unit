@@ -138,8 +138,9 @@
     <string name="search_updated">Search engine updated</string>
     <string name="home_page">Home page</string>
     <string name="default_home">Unit home</string>
-    <string name="home_url_hint">https://example.com</string>
-    <string name="home_page_message">Used by Home and new tabs. Leave empty for Unit home.</string>
+    <string name="home_page_hint">URL or HTML</string>
+    <string name="home_page_html">Custom HTML</string>
+    <string name="home_page_placeholder">Enter URL or HTML to customize your home page.</string>
     <string name="home_saved">Home page saved</string>
     <string name="user_agent">User agent</string>
     <string name="custom_user_agent">Custom user agent</string>
