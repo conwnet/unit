@@ -124,6 +124,8 @@
     <string name="copy_link">Copy link</string>
     <string name="save_bookmark">Save bookmark</string>
     <string name="open_new_tab">Open in new tab</string>
+    <string name="open_background">Open in background</string>
+    <string name="image_in_new_tab">Image in new tab</string>
     <string name="save_image">Save image</string>
     <string name="title">Title</string>
     <string name="bookmark_open_page">Open a webpage to add a bookmark</string>

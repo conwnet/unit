@@ -127,24 +127,34 @@ internal class BrowserDialogs(private val activity: BrowserActivity) {
 
     fun pageContext(link: String?, image: String?) {
         val labels = mutableListOf<Int>()
-        if (UrlUtils.isWeb(link ?: image)) labels.add(R.string.open_new_tab)
-        if (link != null)
+        if (UrlUtils.isWeb(link))
             labels.addAll(
                 listOf(
-                    R.string.copy_link,
-                    R.string.save_bookmark,
+                    R.string.open_new_tab,
+                    R.string.open_background,
                 )
             )
-        if (image != null) labels.add(R.string.save_image)
+        if (link != null) labels.add(R.string.copy_link)
+        if (image != null) {
+            labels.add(R.string.image_in_new_tab)
+            if (link == null && UrlUtils.isWeb(image)) labels.add(R.string.open_background)
+            labels.add(R.string.save_image)
+        }
         if (labels.isEmpty()) return
         val title = UrlUtils.host(link ?: image).ifEmpty { activity.getString(R.string.image) }
         Ui.actions(activity, title, labels) { action ->
-            val url = requireNotNull(if (action == R.string.save_image) image else link ?: image)
+            val url =
+                requireNotNull(
+                    when (action) {
+                        R.string.image_in_new_tab, R.string.save_image -> image
+                        else -> link ?: image
+                    }
+                )
             when (action) {
-                R.string.open_new_tab -> activity.newTab(url, true)
+                R.string.open_new_tab, R.string.image_in_new_tab -> activity.newTab(url, true)
+                R.string.open_background -> activity.newTab(url, false).ensureLoaded()
                 R.string.copy_link ->
                     Ui.copy(activity, R.string.copy_link, url, R.string.link_copied)
-                R.string.save_bookmark -> bookmark(url, UrlUtils.host(url))
                 R.string.save_image ->
                     activity.downloads.request(url, activity.userAgent(), null, null, image = true)
             }
