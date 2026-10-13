@@ -1,5 +1,6 @@
 package net.conw.unit.data
 
+import android.content.pm.ActivityInfo
 import net.conw.unit.browser.HomePage
 import net.conw.unit.browser.UrlUtils
 
@@ -41,6 +42,12 @@ internal class BrowserPreferences(private val store: BrowserStore) {
             return Theme.entries.firstOrNull { it.name == saved } ?: Theme.SYSTEM
         }
         set(value) = store.put("theme", value.name)
+
+    var orientation: Int
+        get() =
+            store.get("orientation")?.toIntOrNull()
+                ?: ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        set(value) = store.put("orientation", value.toString())
 
     var playOn: Boolean
         get() = store.flag("play_on")

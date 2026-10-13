@@ -1,6 +1,7 @@
 package net.conw.unit.browser.ui
 
 import android.annotation.SuppressLint
+import android.content.pm.ActivityInfo
 import android.graphics.Typeface
 import android.util.TypedValue
 import android.view.Gravity
@@ -209,6 +210,7 @@ internal class BrowserMenu(private val activity: BrowserActivity, private val ro
                     BrowserPreferences.Theme.LIGHT -> R.drawable.ic_theme_light
                     BrowserPreferences.Theme.DARK -> R.drawable.ic_theme_dark
                 },
+                active = activity.preferences.theme != BrowserPreferences.Theme.SYSTEM,
             ) {
                 chooseTheme()
             },
@@ -228,6 +230,13 @@ internal class BrowserMenu(private val activity: BrowserActivity, private val ro
             },
             Action(R.string.debug, R.drawable.ic_debug, enabled = activity.current()?.web != null) {
                 BrowserPageTools(activity).debug()
+            },
+            Action(
+                R.string.orientation,
+                R.drawable.ic_orientation,
+                active = activity.preferences.orientation != ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED,
+            ) {
+                chooseOrientation()
             },
             Action(
                 R.string.export,
@@ -272,6 +281,39 @@ internal class BrowserMenu(private val activity: BrowserActivity, private val ro
                     activity.preferences.theme = themes[which]
                     dialog.dismiss()
                     activity.syncTheme()
+                }
+                .setNegativeButton(R.string.cancel, null)
+                .create()
+        )
+    }
+
+    private fun chooseOrientation() {
+        val orientation = activity.preferences.orientation
+        val orientations =
+            listOf(
+                R.string.orientation_system to ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED,
+                R.string.orientation_portrait to ActivityInfo.SCREEN_ORIENTATION_PORTRAIT,
+                R.string.orientation_reverse_portrait to ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT,
+                R.string.orientation_landscape to ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE,
+                R.string.orientation_reverse_landscape to ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE,
+                R.string.orientation_auto to ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR,
+            )
+        val adapter =
+            ArrayAdapter(
+                Ui.dialogContext(activity),
+                android.R.layout.simple_list_item_single_choice,
+                orientations.map { activity.getString(it.first) },
+            )
+        activity.showDialog(
+            Ui.dialog(activity)
+                .setTitle(R.string.orientation)
+                .setSingleChoiceItems(
+                    adapter,
+                    orientations.indexOfFirst { it.second == orientation },
+                ) { dialog, which ->
+                    activity.preferences.orientation = orientations[which].second
+                    dialog.dismiss()
+                    activity.syncOrientation()
                 }
                 .setNegativeButton(R.string.cancel, null)
                 .create()

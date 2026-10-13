@@ -115,6 +115,7 @@ open class BrowserActivity : Activity() {
         pdf = BrowserPdf(this)
         tabSessions = TabSessions(this)
         restore()
+        syncOrientation()
         // A configuration recreation carries the original VIEW intent; open it only once.
         if (state == null) handleIntent(intent)
         if (tabs.isEmpty() && !ending) tabs.add(BrowserTab(this, startUrl(), "Home"))
@@ -152,7 +153,7 @@ open class BrowserActivity : Activity() {
 
     override fun onRetainNonConfigurationInstance(): Any? =
         if (isIncognito) {
-            // Memory only; the platform does not serialize this after process death.
+            // Private tabs remain in memory across configuration changes.
             RetainedTabs(tabs.map { BrowserStore.Page(it.url, it.title) }, selected)
         } else null
 
@@ -442,6 +443,7 @@ open class BrowserActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
+        syncOrientation()
         syncTheme()
         syncLanguages()
         proxy.sync()
@@ -479,6 +481,11 @@ open class BrowserActivity : Activity() {
         syncLanguages()
         syncTheme()
         dismissPopups()
+    }
+
+    internal fun syncOrientation() {
+        val orientation = preferences.orientation
+        if (requestedOrientation != orientation) requestedOrientation = orientation
     }
 
     internal fun syncTheme() {
