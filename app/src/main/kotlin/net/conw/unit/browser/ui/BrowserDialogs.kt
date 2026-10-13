@@ -156,7 +156,7 @@ internal class BrowserDialogs(private val activity: BrowserActivity) {
                 R.string.copy_link ->
                     Ui.copy(activity, R.string.copy_link, url, R.string.link_copied)
                 R.string.save_image ->
-                    activity.downloads.request(url, activity.userAgent(), null, null, image = true)
+                    activity.downloads.request(url, activity.userAgent(), null, null)
             }
         }
     }

@@ -10,7 +10,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.Request
 import okhttp3.Response
 
-/** Shared response lookup and streaming rules. The caller owns the response and client. */
+/** Opens the final download response. The caller owns the response and client. */
 internal object DownloadRequest {
     fun open(
         context: Context,

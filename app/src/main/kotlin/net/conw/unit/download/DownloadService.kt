@@ -189,20 +189,18 @@ class DownloadService : Service() {
                     }
                     .use { response ->
                         val body = response.body
-                        val mime =
-                            body.contentType()?.let { "${it.type}/${it.subtype}" } ?: row.mime
+                        val mime = body.contentType()?.let { "${it.type}/${it.subtype}" }
+                        val filename =
+                            DownloadFiles.name(
+                                response.request.url.toString(),
+                                response.header("Content-Disposition"),
+                                mime,
+                            )
                         row =
                             row.copy(
                                 total = body.contentLength(),
-                                mime = mime,
-                                name =
-                                    if (mime?.startsWith("image/") == true)
-                                        DownloadFiles.name(
-                                            response.request.url.toString(),
-                                            response.header("Content-Disposition"),
-                                            mime,
-                                        )
-                                    else row.name,
+                                mime = DownloadFiles.mimeType(filename, mime),
+                                name = filename,
                             )
                         checkCancelled()
                         val uri = DownloadFiles.create(this@DownloadService, row)

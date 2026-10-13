@@ -7,24 +7,38 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import android.webkit.URLUtil
+import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
+import androidx.webkit.URLUtilCompat
 import java.io.File
 import java.io.IOException
 import java.io.OutputStream
 import java.nio.file.Files
+import java.util.Locale
 
 /** Scoped storage on Android 10+, a public file and URI grant on Android 9. */
 internal object DownloadFiles {
-    fun name(url: String, disposition: String?, mime: String?): String =
-        URLUtil.guessFileName(url, disposition, mime)
-            .replace(Regex("[\\\\/:*?\"<>|\\p{Cntrl}]"), "_")
-            .trim()
-            .take(160)
-            .takeUnless { it.isEmpty() || it == "." || it == ".." } ?: "download"
+    fun name(url: String, disposition: String?, mime: String?): String {
+        val filename =
+            URLUtilCompat.guessFileName(url, disposition, mime)
+                .replace(Regex("[\\\\/:*?\"<>|\\p{Cntrl}]"), "_")
+                .trim()
+                .takeUnless { it.isEmpty() || it == "." || it == ".." } ?: "download"
+        val dot = filename.lastIndexOf('.')
+        val extension = if (dot > 0) filename.substring(dot) else ""
+        return if (extension.length < 160)
+            filename.removeSuffix(extension).take(160 - extension.length) + extension
+        else filename.take(160)
+    }
 
-    fun uniqueName(filename: String, exists: (String) -> Boolean): String {
+    fun mimeType(filename: String, mime: String?): String? {
+        if (mime != null && !mime.equals("application/octet-stream", ignoreCase = true)) return mime
+        val extension = filename.substringAfterLast('.', "").lowercase(Locale.ROOT)
+        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension) ?: mime
+    }
+
+    private fun uniqueName(filename: String, exists: (String) -> Boolean): String {
         val dot = filename.lastIndexOf('.')
         val stem = if (dot > 0) filename.substring(0, dot) else filename
         val extension = if (dot > 0) filename.substring(dot) else ""
@@ -65,7 +79,7 @@ internal object DownloadFiles {
 
     fun complete(context: Context, download: Download): Download {
         val uri = (requireNotNull(download.uri)).toUri()
-        if (Build.VERSION.SDK_INT >= 29 && uri.scheme == "content") {
+        if (Build.VERSION.SDK_INT >= 29) {
             context.contentResolver.update(
                 uri,
                 ContentValues().apply { put(MediaStore.Downloads.IS_PENDING, 0) },
@@ -80,12 +94,14 @@ internal object DownloadFiles {
                     } ?: download.name
             return download.copy(name = name)
         }
-        val part = File(requireNotNull(uri.path))
-        val folder = requireNotNull(part.parentFile)
-        val name = uniqueName(download.name) { folder.resolve(it).exists() }
-        val target = folder.resolve(name)
-        if (!part.renameTo(target)) throw IOException("Unable to finish the download file")
-        return download.copy(name = target.name, uri = Uri.fromFile(target).toString())
+        return synchronized(this) {
+            val part = File(requireNotNull(uri.path))
+            val folder = requireNotNull(part.parentFile)
+            val name = uniqueName(download.name) { folder.resolve(it).exists() }
+            val target = folder.resolve(name)
+            if (!part.renameTo(target)) throw IOException("Unable to finish the download file")
+            download.copy(name = target.name, uri = Uri.fromFile(target).toString())
+        }
     }
 
     fun openIntent(context: Context, download: Download): Intent {

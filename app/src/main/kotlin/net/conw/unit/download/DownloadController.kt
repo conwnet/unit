@@ -2,16 +2,13 @@ package net.conw.unit.download
 
 import android.Manifest
 import android.os.Build
-import androidx.appcompat.app.AlertDialog
 import net.conw.unit.BrowserActivity
 import net.conw.unit.R
 import net.conw.unit.browser.UrlUtils
 import net.conw.unit.ui.Ui
 
 internal class DownloadController(private val activity: BrowserActivity) {
-    private val metadata = DownloadMetadata(activity)
     private val list = DownloadsDialog(activity, ::retry)
-    private var metadataDialog: AlertDialog? = null
 
     init {
         if (!activity.isIncognito) DownloadService.recover(activity, activity.store)
@@ -22,27 +19,23 @@ internal class DownloadController(private val activity: BrowserActivity) {
         userAgent: String?,
         disposition: String?,
         mime: String?,
-        image: Boolean = false,
     ) {
         if (!UrlUtils.isWeb(url)) {
             activity.message(R.string.unsupported_download)
             return
         }
-        stopLookup()
-        var filename = if (image) "image" else DownloadFiles.name(url, disposition, mime)
-        var resolvedMime = mime
+        val filename = DownloadFiles.name(url, disposition, mime)
         val privateNote =
             if (activity.isIncognito) activity.getString(R.string.private_download_note) else ""
         val dialog =
             Ui.dialog(activity)
                 .setTitle(R.string.download_file)
                 .setMessage(
-                    (if (image) activity.getString(R.string.download_checking)
-                    else activity.getString(R.string.download_prompt, filename)) + privateNote
+                    activity.getString(R.string.download_prompt, filename) + privateNote
                 )
                 .setPositiveButton(R.string.download) { _, _ ->
                     fun begin() {
-                        enqueue(url, userAgent, filename, resolvedMime)
+                        enqueue(url, userAgent, filename)
                     }
                     if (Build.VERSION.SDK_INT <= 28)
                         activity.requests.permissions(
@@ -60,49 +53,19 @@ internal class DownloadController(private val activity: BrowserActivity) {
                 }
                 .setNegativeButton(R.string.cancel, null)
                 .create()
-        if (!image) {
-            activity.showDialog(dialog)
-            return
-        }
-
-        metadataDialog = dialog
-        activity.showDialog(dialog) {
-            if (metadataDialog === dialog) {
-                metadataDialog = null
-                metadata.cancel()
-            }
-        }
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
-        val session = DownloadSession.capture(activity, url, userAgent)
-        metadata.lookup(url, session) { information ->
-            if (!dialog.isShowing) return@lookup
-            val message =
-                information.fold(
-                    onSuccess = { (name, type) ->
-                        filename = name
-                        resolvedMime = type
-                        activity.getString(R.string.download_prompt, name)
-                    },
-                    onFailure = {
-                        activity.getString(R.string.download_info_unavailable)
-                    },
-                )
-            dialog.setMessage(message + privateNote)
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = true
-        }
+        activity.showDialog(dialog)
     }
 
     private fun enqueue(
         url: String,
         userAgent: String?,
         filename: String,
-        mime: String?,
     ): Boolean {
         var download: Download? = null
         return try {
             val session = DownloadSession.capture(activity, url, userAgent)
             require(session.proxy.valid())
-            val row = activity.store.addDownload(url, filename, mime, activity.isIncognito)
+            val row = activity.store.addDownload(url, filename, activity.isIncognito)
             download = row
             DownloadService.enqueue(activity, row, session)
             activity.message(R.string.download_started)
@@ -122,7 +85,6 @@ internal class DownloadController(private val activity: BrowserActivity) {
     }
 
     fun show() {
-        stopLookup()
         list.show()
     }
 
@@ -131,21 +93,13 @@ internal class DownloadController(private val activity: BrowserActivity) {
             download.url,
             activity.userAgent(),
             download.name,
-            download.mime,
         )
 
-    private fun stopLookup() {
-        metadataDialog?.dismiss()
-    }
-
     fun stop() {
-        stopLookup()
         list.dismiss()
     }
 
     fun destroy() {
-        stopLookup()
-        metadata.destroy()
         list.destroy()
     }
 }

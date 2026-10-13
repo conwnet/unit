@@ -128,7 +128,6 @@ class CoreTest {
             store.addDownload(
                 "https://example.com/file",
                 "file.bin",
-                "application/octet-stream",
                 false,
             )
         val progress =
@@ -141,7 +140,7 @@ class CoreTest {
         assertTrue(store.download(row.id) == progress)
         store.deleteDownload(row.id)
         val next =
-            store.addDownload("https://example.com/next", "next.bin", null, false)
+            store.addDownload("https://example.com/next", "next.bin", false)
         store.updateDownload(progress)
         assertTrue(
             store.download(row.id) == null &&

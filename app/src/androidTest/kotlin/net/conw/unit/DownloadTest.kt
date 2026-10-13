@@ -119,7 +119,7 @@ class DownloadTest {
     }
 
     private fun start(settings: ProxySettings, url: String): Download {
-        val row = store.addDownload(url, "unit-proxy-test.bin", "application/octet-stream", false)
+        val row = store.addDownload(url, "unit-proxy-test.bin", false)
         created.add(row.id)
         runner.runOnMainSync {
             DownloadService.enqueue(

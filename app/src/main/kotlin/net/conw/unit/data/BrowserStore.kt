@@ -5,11 +5,9 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
-import androidx.core.database.sqlite.transaction
 import java.io.Closeable
 import net.conw.unit.browser.UrlUtils
 import net.conw.unit.download.Download
-import net.conw.unit.download.DownloadFiles
 import net.conw.unit.download.DownloadState
 import org.json.JSONArray
 import org.json.JSONException
@@ -187,21 +185,16 @@ internal class BrowserStore(context: Context) :
         writableDatabase.delete("permissions", null, null)
     }
 
-    fun addDownload(url: String, filename: String, mime: String?, incognito: Boolean): Download {
-        return writableDatabase.transaction {
-            val names = downloads().map { it.name }.toSet()
-            val name = DownloadFiles.uniqueName(filename, names::contains)
-            val values =
-                ContentValues().apply {
-                    put("url", url)
-                    put("name", name)
-                    put("mime", mime)
-                    put("private", if (incognito) 1 else 0)
-                    put("state", DownloadState.QUEUED.name)
-                }
-            val id = insertOrThrow("downloads", null, values)
-            Download(id, url, name, mime, incognito)
-        }
+    fun addDownload(url: String, filename: String, incognito: Boolean): Download {
+        val values =
+            ContentValues().apply {
+                put("url", url)
+                put("name", filename)
+                put("private", if (incognito) 1 else 0)
+                put("state", DownloadState.QUEUED.name)
+            }
+        val id = writableDatabase.insertOrThrow("downloads", null, values)
+        return Download(id, url, filename, null, incognito)
     }
 
     fun downloads(): List<Download> = queryDownloads(null, null)
