@@ -1,5 +1,6 @@
 package net.conw.unit.browser.page
 
+import android.webkit.WebView
 import net.conw.unit.BrowserActivity
 import net.conw.unit.R
 import net.conw.unit.browser.BrowserTab
@@ -28,20 +29,7 @@ internal class BrowserReader(private val activity: BrowserActivity) {
     }
 
     fun apply(tab: BrowserTab) {
-        val background = color(R.color.background)
-        val text = color(R.color.text)
-        val muted = color(R.color.muted)
-        val accent = color(R.color.accent)
-        val css =
-            """
-            body{margin:0;padding:24px;color:$text;background:$background;font:18px/1.75 Georgia,serif;overflow-wrap:anywhere}
-            article{max-width:42rem;margin:auto}h1{font:600 28px/1.3 system-ui;margin:0 0 12px}h2,h3{line-height:1.4}
-            .byline{font:14px/1.5 system-ui;color:$muted;margin-bottom:24px}a{color:$accent}img{max-width:100%;height:auto}
-            figure{margin:24px 0}pre{white-space:pre-wrap}table{display:block;overflow:auto}
-            blockquote{border-inline-start:3px solid $accent;margin:20px 0;padding-inline-start:16px}
-            """
-                .trimIndent()
-        val quotedCss = JSONObject.quote(css)
+        val quotedCss = JSONObject.quote(css())
         val script =
             """
             (function(){
@@ -57,7 +45,7 @@ internal class BrowserReader(private val activity: BrowserActivity) {
                 head.appendChild(policy);
                 const title=document.createElement('title');title.textContent=article.title;
                 head.appendChild(title);
-                const style=document.createElement('style');style.textContent=$quotedCss;
+                const style=document.createElement('style');style.id='unit-reader-style';style.textContent=$quotedCss;
                 head.appendChild(style);
                 const body=document.createElement('body');
                 const content=document.createElement('article');content.innerHTML=article.content;
@@ -74,6 +62,28 @@ internal class BrowserReader(private val activity: BrowserActivity) {
         tab.evaluate(script) { result ->
             if (result != "true") activity.message(R.string.reader_unavailable)
         }
+    }
+
+    fun updateTheme(view: WebView) {
+        view.evaluateJavascript(
+            "(function(){const style=document.getElementById('unit-reader-style');if(style)style.textContent=${JSONObject.quote(css())};})()",
+            null,
+        )
+    }
+
+    private fun css(): String {
+        val background = color(R.color.background)
+        val text = color(R.color.text)
+        val muted = color(R.color.muted)
+        val accent = color(R.color.accent)
+        return """
+            body{margin:0;padding:24px;color:$text;background:$background;font:18px/1.75 Georgia,serif;overflow-wrap:anywhere}
+            article{max-width:42rem;margin:auto}h1{font:600 28px/1.3 system-ui;margin:0 0 12px}h2,h3{line-height:1.4}
+            .byline{font:14px/1.5 system-ui;color:$muted;margin-bottom:24px}a{color:$accent}img{max-width:100%;height:auto}
+            figure{margin:24px 0}pre{white-space:pre-wrap}table{display:block;overflow:auto}
+            blockquote{border-inline-start:3px solid $accent;margin:20px 0;padding-inline-start:16px}
+            """
+            .trimIndent()
     }
 
     private fun color(id: Int) = "#%06x".format(activity.getColor(id) and 0xffffff)

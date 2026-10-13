@@ -3,8 +3,14 @@ package net.conw.unit.data
 import net.conw.unit.browser.HomePage
 import net.conw.unit.browser.UrlUtils
 
-/** Persisted browsing preferences apply on the next page load. */
+/** Persisted browser settings shared by regular and private browsing. */
 internal class BrowserPreferences(private val store: BrowserStore) {
+    enum class Theme {
+        SYSTEM,
+        LIGHT,
+        DARK,
+    }
+
     var searchEngine: String
         get() = store.get("search", "Bing")
         set(value) = store.put("search", value)
@@ -28,6 +34,13 @@ internal class BrowserPreferences(private val store: BrowserStore) {
     var reader: Boolean
         get() = store.flag("reader")
         set(value) = store.put("reader", value)
+
+    var theme: Theme
+        get() {
+            val saved = store.get("theme")
+            return Theme.entries.firstOrNull { it.name == saved } ?: Theme.SYSTEM
+        }
+        set(value) = store.put("theme", value.name)
 
     var playOn: Boolean
         get() = store.flag("play_on")

@@ -3,6 +3,7 @@ package net.conw.unit
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
@@ -20,6 +21,7 @@ import android.window.OnBackInvokedDispatcher
 import androidx.appcompat.app.AlertDialog
 import net.conw.unit.browser.BrowserRequests
 import net.conw.unit.browser.BrowserTab
+import net.conw.unit.browser.BrowserTheme
 import net.conw.unit.browser.HomePage
 import net.conw.unit.browser.SitePermissions
 import net.conw.unit.browser.TabSessions
@@ -67,7 +69,7 @@ open class BrowserActivity : Activity() {
     private val openDialogs = mutableListOf<Dialog>()
     private var ending = false
     private var exiting = false
-    private var nightMode = 0
+    private var appliedNightMode = 0
     internal val proxy
         get() = (application as UnitApplication).proxy
 
@@ -77,6 +79,10 @@ open class BrowserActivity : Activity() {
     internal open val isIncognito
         get() = false
 
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(BrowserTheme.wrap(base))
+    }
+
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
         if (Build.VERSION.SDK_INT >= 33)
@@ -84,7 +90,7 @@ open class BrowserActivity : Activity() {
                 OnBackInvokedDispatcher.PRIORITY_DEFAULT,
                 ::handleBack,
             )
-        nightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        appliedNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
         store = BrowserStore(this)
         preferences = BrowserPreferences(store)
         if (isIncognito) window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
@@ -436,9 +442,9 @@ open class BrowserActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
+        syncTheme()
         syncLanguages()
         proxy.sync()
-        fullscreen.refresh()
         current()?.web?.onResume()
         syncPlayOn()
         playback.refreshPlayOn()
@@ -471,10 +477,16 @@ open class BrowserActivity : Activity() {
     override fun onConfigurationChanged(config: Configuration) {
         super.onConfigurationChanged(config)
         syncLanguages()
-        val updated = config.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        if (nightMode != updated) {
-            nightMode = updated
-            setTheme(R.style.Theme_Unit)
+        syncTheme()
+        dismissPopups()
+    }
+
+    internal fun syncTheme() {
+        val resourceNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        val requestedNightMode = BrowserTheme.apply(this, preferences.theme)
+        // Configuration changes can reset resources while the saved theme remains unchanged.
+        if (appliedNightMode != requestedNightMode || resourceNightMode != requestedNightMode) {
+            appliedNightMode = requestedNightMode
             theme.applyStyle(R.style.Theme_Unit, true)
             @Suppress("DEPRECATION")
             window.statusBarColor = getColor(R.color.background)
@@ -485,10 +497,10 @@ open class BrowserActivity : Activity() {
             progressBar.progressTintList =
                 android.content.res.ColorStateList.valueOf(getColor(R.color.accent))
             openDialogs.toList().forEach { it.dismiss() }
-            refreshHome()
+            tabs.forEach { it.applyTheme() }
             updateToolbar()
+            dismissPopups()
         }
-        dismissPopups()
         fullscreen.refresh()
     }
 

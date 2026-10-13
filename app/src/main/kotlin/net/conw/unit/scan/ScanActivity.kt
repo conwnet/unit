@@ -3,6 +3,7 @@ package net.conw.unit.scan
 import android.Manifest
 import android.app.Activity
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
@@ -31,6 +32,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.TextViewCompat
 import java.util.concurrent.Executors
 import net.conw.unit.R
+import net.conw.unit.browser.BrowserTheme
 import net.conw.unit.browser.UrlUtils
 import net.conw.unit.ui.Ui
 
@@ -60,6 +62,10 @@ class ScanActivity : Activity() {
     private var cameraFailed = false
     private val main = Handler(Looper.getMainLooper())
     private val worker = Executors.newSingleThreadExecutor { task -> Thread(task, "unit-qr-image") }
+
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(BrowserTheme.wrap(base))
+    }
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)

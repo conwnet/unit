@@ -439,6 +439,14 @@ internal class BrowserTab(val activity: BrowserActivity, var url: String, var ti
         web?.settings?.textZoom = activity.preferences.textSize
     }
 
+    fun applyTheme() {
+        val view = web ?: return
+        view.setBackgroundColor(activity.getColor(R.color.background))
+        view.dispatchConfigurationChanged(activity.resources.configuration)
+        if (isHome) activity.homePage.update(view)
+        else if (readerEnabled && readerAttempted == navigation) activity.reader.updateTheme(view)
+    }
+
     @SuppressLint("MissingOnRenderProcessGone") // This client is detached immediately by destroy().
     fun destroy() {
         web?.let { view ->

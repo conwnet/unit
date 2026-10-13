@@ -243,6 +243,10 @@
     <string name="clear_languages">Clear languages</string>
     <string name="reader">Reader</string>
     <string name="reader_unavailable">No readable article found on this page.</string>
+    <string name="theme">Theme</string>
+    <string name="theme_system">Follow system</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
     <string name="play_on">PlayOn</string>
     <string name="play_on_enabled">Allow background video and audio playback.</string>
     <string name="play_on_disabled">Restore default background playback behavior.</string>

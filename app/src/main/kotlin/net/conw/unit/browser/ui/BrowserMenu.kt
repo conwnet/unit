@@ -8,6 +8,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
 import android.view.accessibility.AccessibilityNodeInfo
+import android.widget.ArrayAdapter
 import android.widget.FrameLayout
 import android.widget.HorizontalScrollView
 import android.widget.ImageView
@@ -19,6 +20,7 @@ import net.conw.unit.BrowserActivity
 import net.conw.unit.R
 import net.conw.unit.browser.UrlUtils
 import net.conw.unit.browser.page.BrowserPageTools
+import net.conw.unit.data.BrowserPreferences
 import net.conw.unit.proxy.ProxyDialog
 import net.conw.unit.ui.Ui
 
@@ -201,6 +203,16 @@ internal class BrowserMenu(private val activity: BrowserActivity, private val ro
                 activity.reader.toggle()
             },
             Action(
+                R.string.theme,
+                when (activity.preferences.theme) {
+                    BrowserPreferences.Theme.SYSTEM -> R.drawable.ic_theme
+                    BrowserPreferences.Theme.LIGHT -> R.drawable.ic_theme_light
+                    BrowserPreferences.Theme.DARK -> R.drawable.ic_theme_dark
+                },
+            ) {
+                chooseTheme()
+            },
+            Action(
                 R.string.play_on,
                 R.drawable.ic_play_on,
                 active = activity.preferences.playOn,
@@ -232,6 +244,37 @@ internal class BrowserMenu(private val activity: BrowserActivity, private val ro
                 activity.requests.sharePage()
             },
             Action(R.string.exit, R.drawable.ic_exit) { activity.exit() },
+        )
+    }
+
+    private fun chooseTheme() {
+        val themes = BrowserPreferences.Theme.entries
+        val labels =
+            themes.map { theme ->
+                activity.getString(
+                    when (theme) {
+                        BrowserPreferences.Theme.SYSTEM -> R.string.theme_system
+                        BrowserPreferences.Theme.LIGHT -> R.string.theme_light
+                        BrowserPreferences.Theme.DARK -> R.string.theme_dark
+                    }
+                )
+            }
+        val adapter =
+            ArrayAdapter(
+                Ui.dialogContext(activity),
+                android.R.layout.simple_list_item_single_choice,
+                labels,
+            )
+        activity.showDialog(
+            Ui.dialog(activity)
+                .setTitle(R.string.theme)
+                .setSingleChoiceItems(adapter, activity.preferences.theme.ordinal) { dialog, which ->
+                    activity.preferences.theme = themes[which]
+                    dialog.dismiss()
+                    activity.syncTheme()
+                }
+                .setNegativeButton(R.string.cancel, null)
+                .create()
         )
     }
 
