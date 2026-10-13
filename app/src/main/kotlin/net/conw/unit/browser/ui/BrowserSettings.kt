@@ -2,9 +2,12 @@ package net.conw.unit.browser.ui
 
 import android.text.InputFilter
 import android.text.InputType
+import android.view.View
+import android.widget.LinearLayout
 import android.widget.ScrollView
 import androidx.appcompat.app.AlertDialog
 import net.conw.unit.BrowserActivity
+import net.conw.unit.BuildConfig
 import net.conw.unit.R
 import net.conw.unit.browser.UrlUtils
 import net.conw.unit.data.BrowserPreferences
@@ -28,8 +31,7 @@ internal class BrowserSettings(private val activity: BrowserActivity) {
 
     private fun render() {
         list.removeAllViews()
-        val browsing = Ui.section(activity, list, R.string.settings_browsing)
-        browsing.addView(
+        list.addView(
             Ui.row(
                 activity,
                 activity.getString(R.string.search_engine),
@@ -38,7 +40,7 @@ internal class BrowserSettings(private val activity: BrowserActivity) {
                 click = ::chooseSearchEngine,
             )
         )
-        browsing.addView(
+        list.addView(
             Ui.row(
                 activity,
                 activity.getString(R.string.home_page),
@@ -47,16 +49,7 @@ internal class BrowserSettings(private val activity: BrowserActivity) {
                 click = ::editHomePage,
             )
         )
-        browsing.addView(
-            Ui.row(
-                activity,
-                activity.getString(R.string.user_agent),
-                preferences.userAgent.ifEmpty { activity.getString(R.string.default_user_agent) },
-                icon = R.drawable.ic_desktop,
-                click = ::editUserAgent,
-            )
-        )
-        browsing.addView(
+        list.addView(
             Ui.row(
                 activity,
                 activity.getString(R.string.language),
@@ -66,22 +59,40 @@ internal class BrowserSettings(private val activity: BrowserActivity) {
                 activity.languages.show(activity, ::render)
             }
         )
-        val privacy = Ui.section(activity, list, R.string.settings_privacy)
-        privacy.addView(
+        list.addView(
             Ui.row(
                 activity,
-                activity.getString(R.string.clear_permissions),
-                activity.getString(R.string.permissions_hint),
-                icon = R.drawable.ic_erase,
-                click = ::clearPermissions,
+                activity.getString(R.string.user_agent),
+                preferences.userAgent.ifEmpty { activity.getString(R.string.default_user_agent) },
+                icon = R.drawable.ic_desktop,
+                click = ::editUserAgent,
             )
         )
-        val application = Ui.section(activity, list, R.string.settings_application)
-        application.addView(
+        list.addView(
+            View(activity).apply {
+                setBackgroundColor(activity.getColor(R.color.divider))
+                importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+            },
+            LinearLayout.LayoutParams(-1, Ui.dp(activity, 1)).apply {
+                marginStart = Ui.dp(activity, 12)
+                marginEnd = Ui.dp(activity, 12)
+                topMargin = Ui.dp(activity, 6)
+                bottomMargin = Ui.dp(activity, 6)
+            },
+        )
+        list.addView(
             Ui.row(
                 activity,
-                activity.getString(R.string.about),
-                activity.getString(R.string.project_url),
+                activity.getString(R.string.clear_browsing_data),
+                activity.getString(R.string.clear_browsing_data_hint),
+                icon = R.drawable.ic_delete,
+                click = { BrowserDataDialog(activity).show() },
+            )
+        )
+        list.addView(
+            Ui.row(
+                activity,
+                "${activity.getString(R.string.app_name)} ${BuildConfig.VERSION_NAME}",
                 icon = R.mipmap.ic_launcher,
                 iconTint = null,
             ) {
@@ -165,18 +176,5 @@ internal class BrowserSettings(private val activity: BrowserActivity) {
                 dialog.dismiss()
             }
         }
-    }
-
-    private fun clearPermissions() {
-        activity.showDialog(
-            Ui.dialog(activity)
-                .setTitle(R.string.clear_permissions_title)
-                .setPositiveButton(R.string.clear) { _, _ ->
-                    activity.sitePermissions.clear()
-                    activity.message(R.string.permissions_cleared)
-                }
-                .setNegativeButton(R.string.cancel, null)
-                .create()
-        )
     }
 }

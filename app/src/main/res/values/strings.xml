@@ -147,12 +147,18 @@
     <string name="user_agent_message">Applies to all tabs on the next navigation or Reload. Leave empty for the default Mobile/Desktop user agent. A custom value takes priority over Desktop.</string>
     <string name="user_agent_error">Use printable ASCII characters</string>
     <string name="user_agent_saved">User agent saved · Reload to apply</string>
-    <string name="clear_permissions">Clear site permissions</string>
-    <string name="permissions_hint">Ask again for camera, microphone and location.</string>
-    <string name="clear_permissions_title">Clear site permissions?</string>
-    <string name="permissions_cleared">Site permissions cleared</string>
-    <string name="about">About</string>
-    <string name="project_url" translatable="false">http://github.com/conwnet/unit</string>
+    <string name="clear_browsing_data">Clear browsing data</string>
+    <string name="clear_browsing_data_hint">Choose which data to delete.</string>
+    <string name="browsing_history">Browsing history</string>
+    <string name="cached_files">Cached images and files</string>
+    <string name="cookies_site_data">Cookies and site data</string>
+    <string name="site_permissions">Site permissions</string>
+    <string name="download_records">Download records</string>
+    <string name="clearing_data">Clearing…</string>
+    <string name="browsing_data_cleared">Browsing data cleared</string>
+    <string name="clear_browsing_data_failed">Could not clear all selected data.</string>
+    <string name="clear_site_data_unsupported">Update Android System WebView to clear cookies and site data.</string>
+    <string name="project_url" translatable="false">https://github.com/conwnet/unit</string>
     <string name="close_private_title">Close incognito?</string>
     <string name="close_private_message">This ends the incognito session and clears its browsing data.</string>
     <string name="close_tabs_title">Close all tabs?</string>
@@ -246,9 +252,6 @@
     <string name="pdf_saved">PDF saved.</string>
     <string name="pdf_failed">Unable to export PDF.</string>
     <string name="text">Text</string>
-    <string name="settings_browsing">Browsing</string>
-    <string name="settings_privacy">Privacy</string>
-    <string name="settings_application">Application</string>
     <string name="text_size">Text size</string>
     <string name="reset_text_size">Reset text size</string>
     <string name="close_text_size">Close text size</string>

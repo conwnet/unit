@@ -217,18 +217,6 @@ internal object Ui {
             }
         }
 
-    fun section(context: Context, parent: LinearLayout, title: Int): LinearLayout {
-        parent.addView(
-            text(context, title, 12, R.color.muted).apply {
-                typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
-                setPadding(dp(context, 12), dp(context, 14), 0, dp(context, 6))
-            }
-        )
-        return column(context).apply {
-            parent.addView(this)
-        }
-    }
-
     fun empty(context: Context, title: String, hint: String, icon: Int): View =
         column(context).apply {
             gravity = Gravity.CENTER
