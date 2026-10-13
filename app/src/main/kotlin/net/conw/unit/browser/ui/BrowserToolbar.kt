@@ -181,9 +181,11 @@ internal class BrowserToolbar(private val activity: BrowserActivity, val view: V
     }
 
     fun pageTouched() {
-        if (mode != Mode.NAVIGATION) {
+        if (mode == Mode.ADDRESS) {
+            cancelEditing()
+        } else if (mode == Mode.FIND) {
             keyboard.hideSoftInputFromWindow(view.windowToken, 0)
-            if (mode == Mode.FIND) findInput.clearFocus() else input.clearFocus()
+            findInput.clearFocus()
         }
     }
 
