@@ -173,7 +173,7 @@
     <string name="close_tabs_message">All normal tabs will be closed.</string>
     <string name="unsupported_download">Unsupported download</string>
     <string name="download_file">Download file</string>
-    <string name="download_prompt">%1$s\n\nSave to Downloads/Unit?</string>
+    <string name="download_prompt">%1$s\n\nSave to Downloads?</string>
     <string name="private_download_note">\nDownloads and system download records remain after incognito closes.</string>
     <string name="download">Download</string>
     <string name="storage_required">Storage permission is required</string>

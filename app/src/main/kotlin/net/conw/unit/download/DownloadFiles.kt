@@ -54,10 +54,7 @@ internal object DownloadFiles {
                 ContentValues().apply {
                     put(MediaStore.Downloads.DISPLAY_NAME, download.name)
                     put(MediaStore.Downloads.MIME_TYPE, download.mime ?: "application/octet-stream")
-                    put(
-                        MediaStore.Downloads.RELATIVE_PATH,
-                        "${Environment.DIRECTORY_DOWNLOADS}/Unit",
-                    )
+                    put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
                     put(MediaStore.Downloads.IS_PENDING, 1)
                 }
             context.contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
@@ -65,8 +62,7 @@ internal object DownloadFiles {
         } else {
             val folder =
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                    .resolve("Unit")
-            if (!folder.isDirectory && !folder.mkdirs())
+            if (!folder.mkdirs() && !folder.isDirectory)
                 throw IOException("Unable to create the download folder")
             Uri.fromFile(folder.resolve(".unit-${download.id}.part"))
         }
