@@ -55,7 +55,8 @@ internal class BrowserRequests(private val activity: BrowserActivity) {
                     .setMessage(
                         activity.getString(
                             R.string.open_app_message,
-                            UrlUtils.host(activity.currentUrl()),
+                            if (activity.current()?.isHome == true) activity.getString(R.string.home)
+                            else UrlUtils.host(activity.currentUrl()),
                             safe.data?.scheme ?: activity.getString(R.string.external_app),
                         )
                     )

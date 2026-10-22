@@ -106,7 +106,21 @@ internal class HomePage(private val activity: BrowserActivity) {
             .forEach { (name, resource) ->
                 colors.put(name, "#%06x".format(activity.getColor(resource) and 0xffffff))
             }
+        val strings = JSONObject()
+        mapOf(
+                "home" to R.string.home,
+                "incognito" to R.string.incognito,
+                "privateNote" to R.string.home_private_note,
+                "addressHint" to R.string.address_hint,
+                "go" to R.string.go,
+                "bookmarks" to R.string.bookmarks,
+                "viewAll" to R.string.view_all,
+                "bookmarksHint" to R.string.home_bookmarks_hint,
+            )
+            .forEach { (name, resource) -> strings.put(name, activity.getString(resource)) }
         return JSONObject()
+            .put("language", activity.resources.configuration.locales[0].toLanguageTag())
+            .put("strings", strings)
             .put("incognito", activity.isIncognito)
             .put("colors", colors)
             .put("bookmarks", bookmarks)

@@ -63,7 +63,8 @@ internal class TabPicker(private val activity: BrowserActivity) {
                 row.addView(
                     Ui.row(
                         activity,
-                        page.title.ifBlank { activity.getString(R.string.new_tab) },
+                        if (page.url == UrlUtils.HOME) activity.getString(R.string.home)
+                        else page.title.ifBlank { activity.getString(R.string.new_tab) },
                         if (page.url == UrlUtils.HOME) activity.getString(R.string.home)
                         else UrlUtils.host(page.url),
                         icon =

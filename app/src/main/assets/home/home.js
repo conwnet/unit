@@ -5,13 +5,24 @@
   const sites = document.getElementById('sites');
   const empty = document.getElementById('empty');
   const all = document.getElementById('view-all');
+  const input = document.querySelector('.search input');
+  const submit = document.querySelector('.search button');
 
   function update(data) {
     for (const [key, value] of Object.entries(data.colors)) {
       document.documentElement.style.setProperty(`--${key}`, value);
     }
-    name.textContent = data.incognito ? 'Incognito' : 'Unit';
-    document.title = data.incognito ? 'Incognito' : 'Home';
+    const strings = data.strings;
+    document.documentElement.lang = data.language;
+    name.textContent = data.incognito ? strings.incognito : 'Unit';
+    document.title = data.incognito ? strings.incognito : strings.home;
+    note.textContent = strings.privateNote;
+    input.placeholder = strings.addressHint;
+    input.setAttribute('aria-label', strings.addressHint);
+    submit.setAttribute('aria-label', strings.go);
+    document.getElementById('bookmarks-heading').textContent = strings.bookmarks;
+    all.textContent = strings.viewAll;
+    empty.textContent = strings.bookmarksHint;
     note.hidden = !data.incognito;
     all.hidden = data.count === 0;
     empty.hidden = data.bookmarks.length !== 0;

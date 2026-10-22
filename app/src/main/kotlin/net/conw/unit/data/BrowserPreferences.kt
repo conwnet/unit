@@ -15,6 +15,7 @@ internal class BrowserPreferences(private val store: BrowserStore) {
     enum class AppLanguage(val tag: String) {
         SYSTEM(""),
         ENGLISH("en"),
+        CHINESE("zh-CN"),
     }
 
     var searchEngine: String

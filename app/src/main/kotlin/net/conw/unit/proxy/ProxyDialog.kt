@@ -164,11 +164,6 @@ internal class ProxyDialog(private val activity: BrowserActivity) {
         val bypassToggle = sectionToggle(R.string.proxy_bypass, bypassBox)
         content.addView(bypassToggle)
         content.addView(bypassBox)
-        content.addView(
-            Ui.text(activity, R.string.proxy_scope, 12, R.color.muted).apply {
-                setPadding(0, dp(14), 0, dp(8))
-            }
-        )
         box.addView(
             ScrollView(activity).apply {
                 isVerticalScrollBarEnabled = false

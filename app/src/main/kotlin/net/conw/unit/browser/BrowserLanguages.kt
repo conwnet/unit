@@ -39,8 +39,8 @@ internal object BrowserLanguages {
 
     fun appLanguageName(context: Context, language: BrowserPreferences.AppLanguage): String =
         if (language == BrowserPreferences.AppLanguage.SYSTEM)
-            context.getString(R.string.system_default)
-        else Locale.forLanguageTag(language.tag).let { it.getDisplayName(it) }
+            context.getString(R.string.language_system)
+        else Locale.forLanguageTag(language.tag).let { it.getDisplayLanguage(it) }
 
     fun normalize(value: String): String {
         if (value.isBlank()) return ""

@@ -117,7 +117,7 @@ open class BrowserActivity : Activity() {
         syncOrientation()
         // A configuration recreation carries the original VIEW intent; open it only once.
         if (state == null) handleIntent(intent)
-        if (tabs.isEmpty() && !ending) tabs.add(BrowserTab(this, startUrl(), "Home"))
+        if (tabs.isEmpty() && !ending) tabs.add(BrowserTab(this, startUrl(), getString(R.string.home)))
         showCurrent()
         save()
     }
@@ -167,7 +167,13 @@ open class BrowserActivity : Activity() {
     internal fun userAgent(): String? = current()?.web?.settings?.userAgentString
 
     internal fun syncLanguages() {
-        if (!BrowserLanguages.sync(this, preferences)) return
+        val previousLocales = resources.configuration.locales
+        val websiteLanguagesChanged = BrowserLanguages.sync(this, preferences)
+        if (resources.configuration.locales != previousLocales) {
+            recreate()
+            return
+        }
+        if (!websiteLanguagesChanged) return
         // Attachment lets Chromium update its public locale-derived browser preferences.
         current()
             ?.web
@@ -179,7 +185,12 @@ open class BrowserActivity : Activity() {
     }
 
     internal fun newTab(url: String, select: Boolean): BrowserTab {
-        val tab = BrowserTab(this, url, if (url == UrlUtils.HOME) "Home" else UrlUtils.host(url))
+        val tab =
+            BrowserTab(
+                this,
+                url,
+                if (url == UrlUtils.HOME) getString(R.string.home) else UrlUtils.host(url),
+            )
         tabs.add(tab)
         if (select) select(tabs.lastIndex)
         else {
@@ -210,7 +221,7 @@ open class BrowserActivity : Activity() {
                 endPrivate()
                 return
             }
-            tabs.add(BrowserTab(this, startUrl(), "Home"))
+            tabs.add(BrowserTab(this, startUrl(), getString(R.string.home)))
         }
         if (index < selected) selected--
         selected = selected.coerceIn(0, tabs.lastIndex)
@@ -226,7 +237,7 @@ open class BrowserActivity : Activity() {
             return
         }
         destroyAllTabs()
-        tabs.add(BrowserTab(this, startUrl(), "Home"))
+        tabs.add(BrowserTab(this, startUrl(), getString(R.string.home)))
         selected = 0
         showCurrent()
         save()

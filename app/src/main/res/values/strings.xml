@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Unit</string>
+    <string name="app_name" translatable="false">Unit</string>
     <string name="back">Back</string>
     <string name="forward">Forward</string>
     <string name="address">Address</string>
@@ -7,6 +7,9 @@
     <string name="tabs">Tabs</string>
     <string name="incognito">Incognito</string>
     <string name="home">Home</string>
+    <string name="home_private_note">History isn\'t saved in this session.</string>
+    <string name="view_all">View all</string>
+    <string name="home_bookmarks_hint">Saved bookmarks appear here.</string>
     <string name="bookmarks">Bookmarks</string>
     <string name="history">History</string>
     <string name="downloads">Downloads</string>
@@ -144,19 +147,19 @@
     <string name="search_engine">Search engine</string>
     <string name="search_updated">Search engine updated</string>
     <string name="home_page">Home page</string>
-    <string name="default_home">Unit home</string>
+    <string name="default_home">Default</string>
     <string name="home_page_hint">URL or HTML</string>
     <string name="home_page_html">Custom HTML</string>
     <string name="home_page_placeholder">Enter URL or HTML to customize your home page.</string>
     <string name="home_saved">Home page saved</string>
     <string name="user_agent">User agent</string>
     <string name="custom_user_agent">Custom user agent</string>
-    <string name="default_user_agent">Default (Mobile/Desktop)</string>
-    <string name="user_agent_message">Applies to all tabs on the next navigation or Reload. Leave empty for the default Mobile/Desktop user agent. A custom value takes priority over Desktop.</string>
+    <string name="default_user_agent">Default</string>
+    <string name="user_agent_message">Applies to all tabs on the next navigation or Reload.</string>
     <string name="user_agent_error">Use printable ASCII characters</string>
     <string name="user_agent_saved">User agent saved · Reload to apply</string>
-    <string name="clear_browsing_data">Clear browsing data</string>
-    <string name="clear_browsing_data_hint">Choose which data to delete.</string>
+    <string name="clear_browsing_data">Clear data</string>
+    <string name="clear_browsing_data_hint">This cannot be undone</string>
     <string name="browsing_history">Browsing history</string>
     <string name="cached_files">Cached images and files</string>
     <string name="cookies_site_data">Cookies and site data</string>
@@ -217,10 +220,9 @@
     <string name="proxy_authentication">Authentication</string>
     <string name="proxy_username">Username</string>
     <string name="proxy_password">Password</string>
-    <string name="proxy_bypass">Bypass list</string>
-    <string name="proxy_bypass_hint">Connect directly to these addresses. One rule per line, e.g. localhost, *.example.com or 192.168.0.0/16.</string>
+    <string name="proxy_bypass">Proxy bypass list</string>
+    <string name="proxy_bypass_hint">One rule per line: domains, wildcards or IP ranges.</string>
     <string name="proxy_bypass_error">Enter a valid host, wildcard, IP address or IP range on each line</string>
-    <string name="proxy_scope">Applies to browsing and downloads. Pages are not reloaded.</string>
     <string name="proxy_host_error">Enter a host name or IP address</string>
     <string name="proxy_port_error">Enter a port from 1 to 65535</string>
     <string name="proxy_invalid">Check the proxy configuration</string>
@@ -243,7 +245,7 @@
     <string name="languages">Languages</string>
     <string name="app_language">App language</string>
     <string name="app_language_hint">Language used for menus and settings.</string>
-    <string name="system_default">System default</string>
+    <string name="language_system">System</string>
     <string name="website_languages">Website languages</string>
     <string name="english">English</string>
     <string name="chinese">Chinese</string>

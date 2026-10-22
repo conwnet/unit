@@ -148,7 +148,7 @@ internal class BrowserTab(val activity: BrowserActivity, var url: String, var ti
                         activity.dismissPopups()
                     }
                     url = next
-                    title = if (isHome) "Home" else UrlUtils.host(next)
+                    title = if (isHome) activity.getString(R.string.home) else UrlUtils.host(next)
                     this@BrowserTab.favicon = favicon
                     scaleCaptured = false
                     activity.pageChanged(this@BrowserTab)
@@ -255,7 +255,7 @@ internal class BrowserTab(val activity: BrowserActivity, var url: String, var ti
                 }
 
                 override fun onReceivedTitle(view: WebView, value: String?) {
-                    title = if (isHome) "Home" else value.orEmpty()
+                    title = if (isHome) activity.getString(R.string.home) else value.orEmpty()
                     recordHistory()
                     activity.pageChanged(this@BrowserTab)
                 }

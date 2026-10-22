@@ -10,6 +10,7 @@ import android.os.Handler
 import android.os.Looper
 import androidx.core.content.ContextCompat
 import net.conw.unit.BrowserActivity
+import net.conw.unit.R
 import net.conw.unit.data.BrowserStore
 
 /** Private tab previews cross processes in memory, without launching an Activity or saving URLs. */
@@ -147,7 +148,7 @@ internal class TabSessions(private val activity: BrowserActivity) {
         }
         if (pages.isEmpty()) {
             val home = activity.preferences.startUrl()
-            pages.add(BrowserStore.Page(home, "Home"))
+            pages.add(BrowserStore.Page(home, activity.getString(R.string.home)))
         }
         selected = selected.coerceIn(0, pages.lastIndex)
         activity.store.session(pages, selected)

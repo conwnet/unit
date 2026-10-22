@@ -38,8 +38,7 @@ h2 { margin: 0; font-size: 14px; font-weight: 600; }
 .monogram { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; background: var(--surface-variant);
   color: var(--accent); font-size: 19px; font-weight: 550; transition: transform .12s; }
 .site-name { margin-top: 9px; font-size: 12px; line-height: 1.5; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.empty { margin: 12px 0; color: var(--muted); font-size: 14px; line-height: 1.8; }
-.empty span { font-size: 12px; }
+.empty { margin: 12px 0; color: var(--muted); font-size: 12px; line-height: 1.8; }
 [hidden] { display: none !important; }
 @media (max-width: 320px) { main { padding-inline: 18px; } .sites { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (min-width: 560px) { .sites { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
