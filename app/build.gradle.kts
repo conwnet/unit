@@ -37,6 +37,7 @@ android {
         }
     }
     buildFeatures { buildConfig = true }
+    bundle { language { enableSplit = false } }
 }
 
 kotlin { jvmToolchain(17) }

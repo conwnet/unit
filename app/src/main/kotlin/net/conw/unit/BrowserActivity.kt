@@ -19,6 +19,7 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import android.window.OnBackInvokedDispatcher
 import androidx.appcompat.app.AlertDialog
+import net.conw.unit.browser.BrowserLanguages
 import net.conw.unit.browser.BrowserRequests
 import net.conw.unit.browser.BrowserTab
 import net.conw.unit.browser.BrowserTheme
@@ -73,14 +74,11 @@ open class BrowserActivity : Activity() {
     internal val proxy
         get() = (application as UnitApplication).proxy
 
-    internal val languages
-        get() = (application as UnitApplication).languages
-
     internal open val isIncognito
         get() = false
 
     override fun attachBaseContext(base: Context) {
-        super.attachBaseContext(BrowserTheme.wrap(base))
+        super.attachBaseContext(BrowserLanguages.wrap(BrowserTheme.wrap(base)))
     }
 
     override fun onCreate(state: Bundle?) {
@@ -93,6 +91,7 @@ open class BrowserActivity : Activity() {
         appliedNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
         store = BrowserStore(this)
         preferences = BrowserPreferences(store)
+        BrowserLanguages.sync(this, preferences)
         if (isIncognito) window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
         setContentView(R.layout.activity_browser)
         root = findViewById(R.id.root)
@@ -168,7 +167,7 @@ open class BrowserActivity : Activity() {
     internal fun userAgent(): String? = current()?.web?.settings?.userAgentString
 
     internal fun syncLanguages() {
-        if (!languages.sync()) return
+        if (!BrowserLanguages.sync(this, preferences)) return
         // Attachment lets Chromium update its public locale-derived browser preferences.
         current()
             ?.web

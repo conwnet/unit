@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.webkit.CookieManager
 import net.conw.unit.BrowserActivity
+import net.conw.unit.browser.BrowserLanguages
 import net.conw.unit.browser.UrlUtils
 import net.conw.unit.proxy.ProxySettings
 
@@ -47,7 +48,7 @@ internal data class DownloadSession(
                     userAgent,
                     CookieManager.getInstance().getCookie(url),
                     referer,
-                    activity.languages.header(),
+                    BrowserLanguages.header(activity.preferences),
                 ),
             )
         }

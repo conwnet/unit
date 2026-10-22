@@ -24,6 +24,7 @@
     <item name="scan_camera" type="id" />
     <item name="scan_choices" type="id" />
     <item name="scan_progress" type="id" />
-    <item name="language_input" type="id" />
+    <item name="app_language_select" type="id" />
+    <item name="website_languages_input" type="id" />
     <item name="text_size_slider" type="id" />
 </resources>

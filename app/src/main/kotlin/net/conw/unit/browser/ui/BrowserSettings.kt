@@ -10,6 +10,7 @@ import androidx.appcompat.app.AlertDialog
 import net.conw.unit.BrowserActivity
 import net.conw.unit.BuildConfig
 import net.conw.unit.R
+import net.conw.unit.browser.BrowserLanguages
 import net.conw.unit.browser.HomePage
 import net.conw.unit.browser.UrlUtils
 import net.conw.unit.data.BrowserPreferences
@@ -56,16 +57,6 @@ internal class BrowserSettings(private val activity: BrowserActivity) {
         list.addView(
             Ui.row(
                 activity,
-                activity.getString(R.string.language),
-                preferences.languages.ifEmpty { activity.getString(R.string.system_languages) },
-                icon = R.drawable.ic_language,
-            ) {
-                activity.languages.show(activity, ::render)
-            }
-        )
-        list.addView(
-            Ui.row(
-                activity,
                 activity.getString(R.string.user_agent),
                 preferences.userAgent.ifEmpty { activity.getString(R.string.default_user_agent) },
                 icon = R.drawable.ic_desktop,
@@ -83,6 +74,16 @@ internal class BrowserSettings(private val activity: BrowserActivity) {
                 topMargin = Ui.dp(activity, 6)
                 bottomMargin = Ui.dp(activity, 6)
             },
+        )
+        list.addView(
+            Ui.row(
+                activity,
+                activity.getString(R.string.languages),
+                BrowserLanguages.appLanguageName(activity, preferences.appLanguage),
+                icon = R.drawable.ic_language,
+            ) {
+                BrowserLanguagesDialog(activity).show(::render)
+            }
         )
         list.addView(
             Ui.row(

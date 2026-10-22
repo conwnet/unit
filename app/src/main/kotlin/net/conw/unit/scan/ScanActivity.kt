@@ -32,6 +32,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.TextViewCompat
 import java.util.concurrent.Executors
 import net.conw.unit.R
+import net.conw.unit.browser.BrowserLanguages
 import net.conw.unit.browser.BrowserTheme
 import net.conw.unit.browser.UrlUtils
 import net.conw.unit.ui.Ui
@@ -64,7 +65,7 @@ class ScanActivity : Activity() {
     private val worker = Executors.newSingleThreadExecutor { task -> Thread(task, "unit-qr-image") }
 
     override fun attachBaseContext(base: Context) {
-        super.attachBaseContext(BrowserTheme.wrap(base))
+        super.attachBaseContext(BrowserLanguages.wrap(BrowserTheme.wrap(base)))
     }
 
     override fun onCreate(state: Bundle?) {

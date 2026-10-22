@@ -240,13 +240,18 @@
         <item quantity="one">%d active download</item>
         <item quantity="other">%d active downloads</item>
     </plurals>
-    <string name="language">Preferred languages</string>
+    <string name="languages">Languages</string>
+    <string name="app_language">App language</string>
+    <string name="app_language_hint">Language used for menus and settings.</string>
+    <string name="system_default">System default</string>
+    <string name="website_languages">Website languages</string>
     <string name="english">English</string>
     <string name="chinese">Chinese</string>
-    <string name="language_hint">For web content. Comma-separated tags; empty uses system languages.</string>
-    <string name="invalid_languages">Use up to 10 valid language tags.</string>
-    <string name="system_languages">System languages</string>
-    <string name="clear_languages">Clear languages</string>
+    <string name="spanish">Spanish</string>
+    <string name="french">French</string>
+    <string name="website_languages_hint">Websites use this order when available.</string>
+    <string name="invalid_website_languages">Use up to 10 valid language tags.</string>
+    <string name="clear_website_languages">Clear website languages</string>
     <string name="reader">Reader</string>
     <string name="reader_unavailable">No readable article found on this page.</string>
     <string name="theme">Theme</string>

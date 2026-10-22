@@ -12,6 +12,11 @@ internal class BrowserPreferences(private val store: BrowserStore) {
         DARK,
     }
 
+    enum class AppLanguage(val tag: String) {
+        SYSTEM(""),
+        ENGLISH("en"),
+    }
+
     var searchEngine: String
         get() = store.get("search", "Bing")
         set(value) = store.put("search", value)
@@ -24,7 +29,14 @@ internal class BrowserPreferences(private val store: BrowserStore) {
         get() = store.get("user_agent", "")
         set(value) = store.put("user_agent", value)
 
-    var languages: String
+    var appLanguage: AppLanguage
+        get() {
+            val saved = store.get("app_language")
+            return AppLanguage.entries.firstOrNull { it.tag == saved } ?: AppLanguage.SYSTEM
+        }
+        set(value) = store.put("app_language", value.tag)
+
+    var websiteLanguages: String
         get() = store.get("languages", "")
         set(value) = store.put("languages", value)
 
