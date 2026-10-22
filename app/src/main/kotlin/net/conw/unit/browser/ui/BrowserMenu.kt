@@ -390,13 +390,17 @@ private class MenuPager(
         showPage(target)
     }
 
-    override fun onTouchEvent(event: MotionEvent): Boolean {
+    override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
         if (event.actionMasked == MotionEvent.ACTION_DOWN) {
             startPage = page
             handledFling = false
             downX = event.x
             downY = event.y
         }
+        return super.onInterceptTouchEvent(event)
+    }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
         val handled = super.onTouchEvent(event)
         if (event.actionMasked == MotionEvent.ACTION_UP && !handledFling)
             showPage((scrollX.toFloat() / pageWidth).roundToInt())
