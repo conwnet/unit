@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Explicit AppCompat view for dialogs hosted by platform activities. -->
+<androidx.appcompat.widget.AppCompatCheckedTextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@android:id/text1"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="?attr/listPreferredItemHeightSmall"
+    android:gravity="start|center_vertical"
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp"
+    android:drawablePadding="20dp"
+    android:textAppearance="?attr/textAppearanceBodyLarge"
+    android:textColor="@color/text"
+    app:drawableStartCompat="?android:attr/listChoiceIndicatorSingle" />

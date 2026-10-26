@@ -11,6 +11,7 @@ import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatMultiAutoCompleteTextView
+import androidx.core.content.res.use
 import androidx.core.database.sqlite.transaction
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputLayout
@@ -85,11 +86,18 @@ internal class BrowserLanguagesDialog(private val activity: BrowserActivity) {
                             override fun terminateToken(text: CharSequence): CharSequence = text
                         }
                     )
+                    val itemLayout =
+                        context.obtainStyledAttributes(
+                            null,
+                            intArrayOf(com.google.android.material.R.attr.simpleItemLayout),
+                            androidx.appcompat.R.attr.autoCompleteTextViewStyle,
+                            0,
+                        ).use { it.getResourceId(0, 0) }
                     setAdapter(
                         object :
                             ArrayAdapter<Preset>(
-                                activity,
-                                android.R.layout.simple_dropdown_item_1line,
+                                context,
+                                itemLayout,
                                 presets,
                             ) {
                             override fun getView(
@@ -99,15 +107,10 @@ internal class BrowserLanguagesDialog(private val activity: BrowserActivity) {
                             ): View =
                                 (super.getView(position, convertView, parent) as TextView).apply {
                                     text = getItem(position)?.let { "${it.label} [${it.tag}]" }
-                                    textSize = 15f
-                                    setTextColor(activity.getColor(R.color.text))
-                                    setPadding(dp(14), 0, dp(14), 0)
-                                    minHeight = dp(48)
                                 }
                         }
                     )
-                    setDropDownBackgroundDrawable(Ui.background(activity, R.color.surface, 14))
-                    dropDownVerticalOffset = dp(4)
+                    setDropDownBackgroundDrawable(null)
                     setText(preferences.websiteLanguages)
                 }
         val input =

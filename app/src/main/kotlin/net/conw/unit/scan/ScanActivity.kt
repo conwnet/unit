@@ -17,7 +17,6 @@ import android.view.Gravity
 import android.view.TextureView
 import android.view.View
 import android.view.WindowManager
-import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -29,7 +28,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.widget.TextViewCompat
+import com.google.android.material.button.MaterialButton
 import java.util.concurrent.Executors
 import net.conw.unit.R
 import net.conw.unit.browser.BrowserLanguages
@@ -50,8 +49,8 @@ class ScanActivity : Activity() {
     private lateinit var progress: ProgressBar
     private lateinit var image: ImageButton
     private lateinit var retry: ImageButton
-    private lateinit var cameraChoice: Button
-    private lateinit var imageChoice: Button
+    private lateinit var cameraChoice: MaterialButton
+    private lateinit var imageChoice: MaterialButton
     private var resultDialog: AlertDialog? = null
     private var resultText: String? = null
     private var resumed = false
@@ -396,16 +395,21 @@ class ScanActivity : Activity() {
     }
 
     private fun sourceButton(icon: Int, label: Int, click: () -> Unit) =
-        Button(this).apply {
+        MaterialButton(Ui.dialogContext(this)).apply {
             setText(label)
             isAllCaps = false
             textSize = 14f
             typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
             setTextColor(getColor(R.color.accent))
-            setCompoundDrawablesRelativeWithIntrinsicBounds(icon, 0, 0, 0)
-            TextViewCompat.setCompoundDrawableTintList(this, ColorStateList.valueOf(getColor(R.color.accent)))
-            compoundDrawablePadding = dp(8)
-            background = Ui.ripple(this@ScanActivity, R.color.surface, 12)
+            setIconResource(icon)
+            iconTint = ColorStateList.valueOf(getColor(R.color.accent))
+            iconSize = dp(18)
+            iconPadding = dp(8)
+            backgroundTintList = ColorStateList.valueOf(getColor(R.color.surface))
+            rippleColor = ColorStateList.valueOf(getColor(R.color.ripple))
+            cornerRadius = dp(12)
+            insetTop = 0
+            insetBottom = 0
             setPadding(dp(16), 0, dp(16), 0)
             setOnClickListener { click() }
         }

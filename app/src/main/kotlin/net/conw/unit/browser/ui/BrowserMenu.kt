@@ -9,7 +9,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
 import android.view.accessibility.AccessibilityNodeInfo
-import android.widget.ArrayAdapter
 import android.widget.FrameLayout
 import android.widget.HorizontalScrollView
 import android.widget.ImageView
@@ -292,16 +291,13 @@ internal class BrowserMenu(private val activity: BrowserActivity, private val ro
                     }
                 )
             }
-        val adapter =
-            ArrayAdapter(
-                Ui.dialogContext(activity),
-                android.R.layout.simple_list_item_single_choice,
-                labels,
-            )
         activity.showDialog(
             Ui.dialog(activity)
                 .setTitle(R.string.theme)
-                .setSingleChoiceItems(adapter, activity.preferences.theme.ordinal) { dialog, which ->
+                .setSingleChoiceItems(
+                    labels.toTypedArray(),
+                    activity.preferences.theme.ordinal,
+                ) { dialog, which ->
                     activity.preferences.theme = themes[which]
                     dialog.dismiss()
                     activity.syncTheme()
@@ -322,17 +318,11 @@ internal class BrowserMenu(private val activity: BrowserActivity, private val ro
                 R.string.orientation_reverse_landscape to ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE,
                 R.string.orientation_auto to ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR,
             )
-        val adapter =
-            ArrayAdapter(
-                Ui.dialogContext(activity),
-                android.R.layout.simple_list_item_single_choice,
-                orientations.map { activity.getString(it.first) },
-            )
         activity.showDialog(
             Ui.dialog(activity)
                 .setTitle(R.string.orientation)
                 .setSingleChoiceItems(
-                    adapter,
+                    orientations.map { activity.getString(it.first) }.toTypedArray(),
                     orientations.indexOfFirst { it.second == orientation },
                 ) { dialog, which ->
                     activity.preferences.orientation = orientations[which].second

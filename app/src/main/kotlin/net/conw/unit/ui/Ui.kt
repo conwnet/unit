@@ -144,7 +144,7 @@ internal object Ui {
 
     fun ripple(context: Context, color: Int, radius: Int) =
         RippleDrawable(
-            ColorStateList.valueOf((context.getColor(R.color.accent) and 0xffffff) or 0x18000000),
+            ColorStateList.valueOf(context.getColor(R.color.ripple)),
             background(context, color, radius),
             background(context, color, radius),
         )
