@@ -50,11 +50,14 @@ if __name__ == '__main__':
     original = rows[-1]
     adb('shell', 'am', 'force-stop', PACKAGE)
     adb('shell', 'am', 'start', '-n', PACKAGE + '/net.conw.unit.BrowserActivity')
-    for _ in range(20):
-        failed = downloads()[-1]
-        if failed['state'] == 'FAILED':
+    deadline = time.monotonic() + 8
+    while time.monotonic() < deadline:
+        failed = next((row for row in downloads() if row['id'] == original['id']), None)
+        if failed and failed['state'] == 'FAILED':
             break
         time.sleep(.1)
+    else:
+        raise AssertionError('The interrupted download did not recover: ' + repr(failed))
     assert failed['id'] == original['id'] and failed['state'] == 'FAILED' and failed['uri'] is None, failed
     assert 'Interrupted' in failed['error']
     print('PASS: Interrupted download recovery discards the partial file', flush=True)

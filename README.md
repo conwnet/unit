@@ -2,7 +2,7 @@
 
 Unit is a lightweight Android browser built on the system WebView, supporting Android 9 and newer.
 
-It offers features such as incognito mode, proxy support, reader mode, QR scanning, background playback, and built-in page debugging tools.
+It offers features such as incognito mode, proxy support, reader mode, QR scanning, background playback, and debugging tools.
 
 ## Releases
 

@@ -77,20 +77,34 @@ internal class ProxyClient(private val settings: ProxySettings) : Call.Factory {
             .build()
     }
 
-    private class ProxyAuthentication(private val settings: ProxySettings) : Authenticator {
+    internal class ProxyAuthentication(private val settings: ProxySettings) : Authenticator {
         override fun authenticate(route: Route?, response: Response): Request? {
             if (route?.proxy?.type() != Proxy.Type.HTTP) return null
             // A 407 inside the origin's TLS connection is not a proxy challenge.
             if (response.request.url.isHttps && response.request.method != "CONNECT") return null
             val previous = response.request.header("Proxy-Authorization")
+            val challenges = response.challenges()
             val challenge =
-                response.challenges().firstOrNull { it.scheme.equals("Digest", true) }
-                    ?: response.challenges().firstOrNull { it.scheme.equals("Basic", true) }
+                challenges.firstOrNull { it.scheme.equals("Digest", true) }
+                    ?: challenges.firstOrNull { it.scheme.equals("Basic", true) }
+                    // Send credentials over proxy TLS before an unauthenticated CONNECT can be closed.
+                    ?: challenges.firstOrNull {
+                        settings.type == ProxySettings.Type.HTTPS &&
+                            response.request.method == "CONNECT" &&
+                            it.scheme.equals("OkHttp-Preemptive", true)
+                    }
                     ?: return null
-            if (previous != null && challenge.authParams["stale"] != "true") return null
+            // A preemptive Basic attempt may need Digest or the proxy's requested charset.
+            if (previous != null && !previous.startsWith("Basic ", true) &&
+                challenge.authParams["stale"] != "true") return null
+            val preemptive = challenge.scheme.equals("OkHttp-Preemptive", true)
             val header =
-                if (challenge.scheme.equals("Basic", true))
-                    Credentials.basic(settings.username, settings.password, challenge.charset)
+                if (preemptive || challenge.scheme.equals("Basic", true))
+                    Credentials.basic(
+                        settings.username,
+                        settings.password,
+                        if (preemptive) Charsets.UTF_8 else challenge.charset,
+                    )
                 else {
                     val values = challenge.authParams
                     val nonce = values["nonce"] ?: return null
@@ -141,6 +155,7 @@ internal class ProxyClient(private val settings: ProxySettings) : Call.Factory {
                         }
                         .joinToString(", ", "Digest ")
                 }
+            if (header == previous) return null
             return response.request.newBuilder().header("Proxy-Authorization", header).build()
         }
     }
