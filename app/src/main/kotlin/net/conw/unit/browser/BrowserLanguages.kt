@@ -11,6 +11,10 @@ import net.conw.unit.data.BrowserStore
 
 /** UI resources use the app language; WebView reads the process locale list. */
 internal object BrowserLanguages {
+    @Volatile
+    var appResources: Resources? = null
+        private set
+
     fun wrap(context: Context): Context {
         val language = BrowserStore(context).use { BrowserPreferences(it).appLanguage }
         return context.createConfigurationContext(
@@ -23,7 +27,6 @@ internal object BrowserLanguages {
 
     fun sync(context: Context, preferences: BrowserPreferences): Boolean {
         applyAppLanguage(context.applicationContext, preferences.appLanguage)
-        applyAppLanguage(context, preferences.appLanguage)
         val locales = websiteLocales(preferences.websiteLanguages)
         if (locales.isEmpty || LocaleList.getDefault() == locales) return false
         LocaleList.setDefault(locales)
@@ -58,15 +61,15 @@ internal object BrowserLanguages {
             .joinToString(",")
     }
 
-    @Suppress("DEPRECATION")
     private fun applyAppLanguage(context: Context, language: BrowserPreferences.AppLanguage) {
-        val locales = appLocales(language)
-        if (context.resources.configuration.locales == locales) return
-        val config = Configuration(context.resources.configuration).apply { setLocales(locales) }
-        context.resources.updateConfiguration(config, context.resources.displayMetrics)
+        appResources = context.createConfigurationContext(
+            Configuration().apply {
+                if (language != BrowserPreferences.AppLanguage.SYSTEM) setLocales(appLocales(language))
+            }
+        ).resources
     }
 
-    private fun appLocales(language: BrowserPreferences.AppLanguage): LocaleList =
+    fun appLocales(language: BrowserPreferences.AppLanguage): LocaleList =
         if (language == BrowserPreferences.AppLanguage.SYSTEM)
             Resources.getSystem().configuration.locales
         else LocaleList.forLanguageTags(language.tag)

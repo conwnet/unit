@@ -8,6 +8,7 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
+import android.content.res.Resources
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
@@ -32,6 +33,8 @@ class DownloadService : Service() {
     private var lastStart = 0
     private var firstStart = true
     private var destroyed = false
+
+    override fun getResources(): Resources = application.resources
 
     override fun onCreate() {
         super.onCreate()

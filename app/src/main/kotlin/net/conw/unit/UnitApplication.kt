@@ -1,6 +1,7 @@
 package net.conw.unit
 
 import android.app.Application
+import android.content.res.Resources
 import android.webkit.WebView
 import net.conw.unit.browser.BrowserLanguages
 import net.conw.unit.data.BrowserPreferences
@@ -10,6 +11,8 @@ import net.conw.unit.proxy.BrowserProxy
 
 class UnitApplication : Application() {
     internal val proxy by lazy { BrowserProxy(this) }
+
+    override fun getResources(): Resources = BrowserLanguages.appResources ?: super.getResources()
 
     override fun onCreate() {
         super.onCreate()

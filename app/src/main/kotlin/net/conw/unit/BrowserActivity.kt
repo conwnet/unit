@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.os.LocaleList
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -71,6 +72,7 @@ open class BrowserActivity : Activity() {
     private var ending = false
     private var exiting = false
     private var appliedNightMode = 0
+    private lateinit var appliedAppLocales: LocaleList
     internal val proxy
         get() = (application as UnitApplication).proxy
 
@@ -91,9 +93,12 @@ open class BrowserActivity : Activity() {
         appliedNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
         store = BrowserStore(this)
         preferences = BrowserPreferences(store)
+        appliedAppLocales = BrowserLanguages.appLocales(preferences.appLanguage)
         BrowserLanguages.sync(this, preferences)
         if (isIncognito) window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
         setContentView(R.layout.activity_browser)
+        // The toolbar supplies the navigation bar background on Android 15 and newer.
+        if (Build.VERSION.SDK_INT >= 35) window.isNavigationBarContrastEnforced = false
         root = findViewById(R.id.root)
         content = findViewById(R.id.content)
         progressBar = findViewById(R.id.progress)
@@ -167,9 +172,8 @@ open class BrowserActivity : Activity() {
     internal fun userAgent(): String? = current()?.web?.settings?.userAgentString
 
     internal fun syncLanguages() {
-        val previousLocales = resources.configuration.locales
         val websiteLanguagesChanged = BrowserLanguages.sync(this, preferences)
-        if (resources.configuration.locales != previousLocales) {
+        if (appliedAppLocales != BrowserLanguages.appLocales(preferences.appLanguage)) {
             recreate()
             return
         }
@@ -506,10 +510,12 @@ open class BrowserActivity : Activity() {
         if (appliedNightMode != requestedNightMode || resourceNightMode != requestedNightMode) {
             appliedNightMode = requestedNightMode
             theme.applyStyle(R.style.Theme_Unit, true)
-            @Suppress("DEPRECATION")
-            window.statusBarColor = getColor(R.color.background)
-            @Suppress("DEPRECATION")
-            window.navigationBarColor = getColor(R.color.surface)
+            if (Build.VERSION.SDK_INT < 35) {
+                @Suppress("DEPRECATION")
+                window.statusBarColor = getColor(R.color.background)
+                @Suppress("DEPRECATION")
+                window.navigationBarColor = getColor(R.color.surface)
+            }
             root.setBackgroundColor(getColor(R.color.background))
             toolbar.applyTheme()
             progressBar.progressTintList =

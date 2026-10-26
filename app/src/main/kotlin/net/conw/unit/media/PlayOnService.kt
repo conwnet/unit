@@ -8,6 +8,7 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
+import android.content.res.Resources
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.ServiceCompat
@@ -17,6 +18,8 @@ import net.conw.unit.R
 
 /** Keeps WebView playback available while PlayOn is enabled. */
 open class PlayOnService : Service() {
+    override fun getResources(): Resources = application.resources
+
     override fun onCreate() {
         super.onCreate()
         getSystemService(NotificationManager::class.java).createNotificationChannel(
