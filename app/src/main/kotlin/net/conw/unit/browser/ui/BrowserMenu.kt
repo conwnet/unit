@@ -35,7 +35,6 @@ internal class BrowserMenu(private val activity: BrowserActivity, private val ro
     private var page = 0
 
     fun show() {
-        activity.proxyNotice.dismiss()
         if (dismiss()) return
         activity.toolbar.cancelEditing()
         activity.dismissPopups()

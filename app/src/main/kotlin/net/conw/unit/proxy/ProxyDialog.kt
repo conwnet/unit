@@ -16,6 +16,7 @@ import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputLayout
 import net.conw.unit.BrowserActivity
 import net.conw.unit.R
+import net.conw.unit.browser.UrlUtils
 import net.conw.unit.ui.Ui
 
 /** Edits a draft; only Apply changes the shared proxy or its enabled state. */
@@ -228,7 +229,19 @@ internal class ProxyDialog(private val activity: BrowserActivity) {
                 if (activity.isDestroyed || activity.isFinishing) return@save
                 if (success) {
                     dialog.dismiss()
-                    activity.proxyNotice.show(next.enabled)
+                    Ui.snackbar(
+                            activity,
+                            if (next.enabled) R.string.proxy_enabled_notice
+                            else R.string.proxy_disabled_notice,
+                        )
+                        .apply {
+                            val tab = activity.current()
+                            if (UrlUtils.isWeb(tab?.url))
+                                setAction(R.string.reload) {
+                                    if (activity.current() === tab) tab?.reload()
+                                }
+                        }
+                        .show()
                 } else
                     activity.message(proxy.error ?: activity.getString(R.string.proxy_apply_error))
             }

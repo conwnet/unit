@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -22,7 +23,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.graphics.drawable.toDrawable
+import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kotlin.math.roundToInt
@@ -65,6 +69,21 @@ internal object Ui {
             .setBackgroundInsetEnd(0)
             .setBackgroundInsetTop(0)
             .setBackgroundInsetBottom(0)
+
+    fun snackbar(activity: BrowserActivity, text: Int) =
+        Snackbar.make(
+                dialogContext(activity),
+                activity.findViewById(R.id.root),
+                activity.getString(text),
+                Snackbar.LENGTH_LONG,
+            )
+            .setAnchorView(activity.toolbar.view.takeIf { it.isVisible })
+            .apply {
+                view.updateLayoutParams<FrameLayout.LayoutParams> {
+                    width = ViewGroup.LayoutParams.WRAP_CONTENT
+                    gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+                }
+            }
 
     fun actions(
         activity: BrowserActivity,

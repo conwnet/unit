@@ -2,11 +2,6 @@ package net.conw.unit.download
 
 import android.Manifest
 import android.os.Build
-import android.view.Gravity
-import android.view.ViewGroup
-import android.widget.FrameLayout
-import androidx.core.view.updateLayoutParams
-import com.google.android.material.snackbar.Snackbar
 import net.conw.unit.BrowserActivity
 import net.conw.unit.R
 import net.conw.unit.browser.UrlUtils
@@ -73,20 +68,8 @@ internal class DownloadController(private val activity: BrowserActivity) {
             val row = activity.store.addDownload(url, filename, activity.isIncognito)
             download = row
             DownloadService.enqueue(activity, row, session)
-            Snackbar.make(
-                    Ui.dialogContext(activity),
-                    activity.findViewById(R.id.root),
-                    activity.getString(R.string.download_started),
-                    Snackbar.LENGTH_LONG,
-                )
-                .setAnchorView(activity.toolbar.view)
+            Ui.snackbar(activity, R.string.download_started)
                 .setAction(R.string.records) { show() }
-                .apply {
-                    view.updateLayoutParams<FrameLayout.LayoutParams> {
-                        width = ViewGroup.LayoutParams.WRAP_CONTENT
-                        gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-                    }
-                }
                 .show()
             true
         } catch (_: Exception) {

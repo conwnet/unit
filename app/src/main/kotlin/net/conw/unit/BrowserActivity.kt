@@ -42,7 +42,6 @@ import net.conw.unit.media.FullscreenController
 import net.conw.unit.media.PlayOnService
 import net.conw.unit.media.VideoPlayback
 import net.conw.unit.privacy.PrivateSession
-import net.conw.unit.proxy.ProxyNotice
 import net.conw.unit.ui.Ui
 
 open class BrowserActivity : Activity() {
@@ -63,7 +62,6 @@ open class BrowserActivity : Activity() {
     internal lateinit var homePage: HomePage
     internal lateinit var reader: BrowserReader
     internal lateinit var playback: VideoPlayback
-    internal lateinit var proxyNotice: ProxyNotice
     private lateinit var root: FrameLayout
     private lateinit var content: FrameLayout
     private lateinit var progressBar: ProgressBar
@@ -112,7 +110,6 @@ open class BrowserActivity : Activity() {
         reader = BrowserReader(this)
         playback = VideoPlayback(this, root)
         toolbar = BrowserToolbar(this, toolbarView)
-        proxyNotice = ProxyNotice(this, root)
         menu = BrowserMenu(this, root)
         zoom = BrowserZoom(this, root)
         textSize = BrowserTextSize(this, root)
@@ -405,7 +402,6 @@ open class BrowserActivity : Activity() {
     internal fun message(text: Int) = message(getString(text))
 
     internal fun pageTouched() {
-        proxyNotice.dismiss()
         toolbar.pageTouched()
         if (!toolbar.isEditing && !zoom.isShowing && !textSize.isShowing) {
             menu.dismiss()
@@ -480,7 +476,6 @@ open class BrowserActivity : Activity() {
         if (!preferences.playOn) {
             playback.hide()
         }
-        proxyNotice.dismiss()
         dismissPopups()
         downloads.stop()
         super.onStop()
@@ -532,7 +527,6 @@ open class BrowserActivity : Activity() {
         stopService(PlayOnService.intent(this))
         pdf.cancel()
         playback.hide()
-        proxyNotice.dismiss()
         save()
         ending = true
         dismissPopups()
