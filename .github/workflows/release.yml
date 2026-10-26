@@ -1,0 +1,132 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '**'
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: ${{ !github.event.deleted }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: write
+    env:
+      BUILD_TOOLS_VERSION: '35.0.0'
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Validate version tag
+        id: version
+        env:
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          python3 - <<'PY'
+          import os
+          import re
+          import sys
+
+          tag = os.environ["TAG_NAME"]
+          match = re.fullmatch(r"(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)", tag)
+          if not match:
+              sys.exit("::error::Tag must use x.x.x with no leading zeros, for example 1.2.3.")
+
+          major, minor, patch = map(int, match.groups())
+          if minor > 999 or patch > 999:
+              sys.exit("::error::Minor and patch versions must be between 0 and 999.")
+
+          code = major * 1_000_000 + minor * 1_000 + patch
+          if not 1 <= code <= 2_100_000_000:
+              sys.exit("::error::Calculated versionCode must be between 1 and 2100000000.")
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write(f"name={tag}\ncode={code}\n")
+          print(f"versionName={tag}, versionCode={code}")
+          PY
+
+      - name: Check out tagged commit
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Set up Java
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+
+      - name: Install Android SDK packages
+        run: |
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" \
+            "platforms;android-36" "build-tools;$BUILD_TOOLS_VERSION"
+
+      - name: Check and build release
+        env:
+          VERSION_NAME: ${{ steps.version.outputs.name }}
+          VERSION_CODE: ${{ steps.version.outputs.code }}
+        run: |
+          ./gradlew --no-daemon :app:lintRelease :app:assembleRelease \
+            "-PversionName=$VERSION_NAME" "-PversionCode=$VERSION_CODE"
+
+      - name: Sign and verify APK
+        env:
+          VERSION_NAME: ${{ steps.version.outputs.name }}
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          for name in ANDROID_KEYSTORE_BASE64 ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_ALIAS ANDROID_KEY_PASSWORD; do
+            if [[ -z "${!name}" ]]; then
+              echo "::error::Missing required secret: $name"
+              exit 1
+            fi
+          done
+
+          umask 077
+          keystore_path="$RUNNER_TEMP/unit-release.keystore"
+          aligned_apk="$RUNNER_TEMP/unit-aligned.apk"
+          trap 'rm -f "$keystore_path" "$aligned_apk"' EXIT
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$keystore_path"
+
+          mkdir -p artifacts
+          build_tools="$ANDROID_HOME/build-tools/$BUILD_TOOLS_VERSION"
+          "$build_tools/zipalign" -P 16 -f 4 \
+            app/build/outputs/apk/release/app-release-unsigned.apk "$aligned_apk"
+          "$build_tools/apksigner" sign \
+            --ks "$keystore_path" \
+            --ks-key-alias "$ANDROID_KEY_ALIAS" \
+            --ks-pass env:ANDROID_KEYSTORE_PASSWORD \
+            --key-pass env:ANDROID_KEY_PASSWORD \
+            --out "artifacts/unit-$VERSION_NAME.apk" "$aligned_apk"
+          "$build_tools/apksigner" verify --verbose --print-certs "artifacts/unit-$VERSION_NAME.apk"
+          cd artifacts
+          sha256sum "unit-$VERSION_NAME.apk" > "unit-$VERSION_NAME.apk.sha256"
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          VERSION_NAME: ${{ steps.version.outputs.name }}
+        run: |
+          if gh release view "$VERSION_NAME" --json isDraft --jq '.isDraft' > "$RUNNER_TEMP/release-is-draft"; then
+            if [[ "$(cat "$RUNNER_TEMP/release-is-draft")" != true ]]; then
+              echo "::error::Release $VERSION_NAME is already published. Use a new version tag."
+              exit 1
+            fi
+          else
+            gh release create "$VERSION_NAME" --verify-tag --draft \
+              --title "$VERSION_NAME" --generate-notes
+          fi
+
+          gh release upload "$VERSION_NAME" \
+            "artifacts/unit-$VERSION_NAME.apk" "artifacts/unit-$VERSION_NAME.apk.sha256" --clobber
+          gh release edit "$VERSION_NAME" --draft=false
