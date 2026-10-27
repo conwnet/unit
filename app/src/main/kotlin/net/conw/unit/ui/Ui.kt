@@ -1,5 +1,6 @@
 package net.conw.unit.ui
 
+import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -20,10 +21,8 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.graphics.drawable.toDrawable
-import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -36,11 +35,17 @@ import net.conw.unit.R
 internal object Ui {
     const val EMPTY_MIN_HEIGHT_DP = 192
 
-    fun copy(context: Context, label: Int, value: String, confirmation: Int = R.string.copied) {
-        context
+    fun copy(
+        activity: Activity,
+        label: Int,
+        value: String,
+        confirmation: Int = R.string.copied,
+        view: View? = null,
+    ) {
+        activity
             .getSystemService(ClipboardManager::class.java)
-            .setPrimaryClip(ClipData.newPlainText(context.getString(label), value))
-        Toast.makeText(context, confirmation, Toast.LENGTH_SHORT).show()
+            .setPrimaryClip(ClipData.newPlainText(activity.getString(label), value))
+        message(activity, activity.getString(confirmation), view)
     }
 
     fun form(context: Context) =
@@ -70,20 +75,40 @@ internal object Ui {
             .setBackgroundInsetTop(0)
             .setBackgroundInsetBottom(0)
 
+    fun message(activity: Activity, text: String, view: View? = null) {
+        // Let button callbacks dismiss their dialogs before choosing the message's window.
+        activity.window.decorView.post {
+            if (!activity.isFinishing && !activity.isDestroyed)
+                snackbar(activity, text, view?.takeIf { it.isAttachedToWindow }).show()
+        }
+    }
+
     fun snackbar(activity: BrowserActivity, text: Int) =
-        Snackbar.make(
+        snackbar(activity, activity.getString(text), activity.findViewById(R.id.root))
+
+    private fun snackbar(activity: Activity, text: String, view: View? = null): Snackbar {
+        val parent =
+            view ?: (activity as? BrowserActivity)?.messageView
+                ?: activity.findViewById<View>(android.R.id.content)
+        val anchor =
+            parent.findViewById<View>(androidx.appcompat.R.id.buttonPanel)?.takeIf { it.isShown }
+                ?: (activity as? BrowserActivity)?.toolbar?.view?.takeIf {
+                    it.isShown && it.rootView === parent.rootView
+                }
+        return Snackbar.make(
                 dialogContext(activity),
-                activity.findViewById(R.id.root),
-                activity.getString(text),
+                parent,
+                text,
                 Snackbar.LENGTH_LONG,
             )
-            .setAnchorView(activity.toolbar.view.takeIf { it.isVisible })
+            .setAnchorView(anchor)
             .apply {
-                view.updateLayoutParams<FrameLayout.LayoutParams> {
+                this.view.updateLayoutParams<FrameLayout.LayoutParams> {
                     width = ViewGroup.LayoutParams.WRAP_CONTENT
                     gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
                 }
             }
+    }
 
     fun actions(
         activity: BrowserActivity,

@@ -17,7 +17,6 @@ import android.view.WindowManager
 import android.webkit.CookieManager
 import android.widget.FrameLayout
 import android.widget.ProgressBar
-import android.widget.Toast
 import android.window.OnBackInvokedDispatcher
 import androidx.appcompat.app.AlertDialog
 import net.conw.unit.browser.BrowserLanguages
@@ -76,6 +75,10 @@ open class BrowserActivity : Activity() {
 
     internal open val isIncognito
         get() = false
+
+    internal val messageView: View
+        get() =
+            openDialogs.lastOrNull { it.isShowing }?.findViewById<View>(android.R.id.content) ?: root
 
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(BrowserLanguages.wrap(BrowserTheme.wrap(base)))
@@ -396,7 +399,7 @@ open class BrowserActivity : Activity() {
     }
 
     internal fun message(text: String) {
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
+        Ui.message(this, text)
     }
 
     internal fun message(text: Int) = message(getString(text))

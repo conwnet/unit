@@ -336,12 +336,11 @@ class ScanActivity : Activity() {
             picking = false
             updateScanner()
             resultText?.let(::showResult)
-            android.widget.Toast.makeText(
-                    this,
-                    R.string.no_file_picker,
-                    android.widget.Toast.LENGTH_SHORT,
-                )
-                .show()
+            Ui.message(
+                this,
+                getString(R.string.no_file_picker),
+                resultDialog?.findViewById<View>(android.R.id.content),
+            )
         }
     }
 
@@ -457,7 +456,7 @@ class ScanActivity : Activity() {
                 chooseImage()
             }
         dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener {
-            Ui.copy(this, R.string.qr_code, text)
+            Ui.copy(this, R.string.qr_code, text, view = dialog.findViewById(android.R.id.content))
         }
     }
 
