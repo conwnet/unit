@@ -59,7 +59,7 @@ androidComponents {
         val generateLogo = tasks.register<GenerateLogo>(
             "generate${variant.name.replaceFirstChar { it.uppercaseChar() }}Logo"
         ) {
-            svgFile.set(layout.projectDirectory.file("src/main/assets/home/logo.svg"))
+            svgFile.set(layout.projectDirectory.file("src/main/graphics/launcher.svg"))
         }
         variant.sources.res?.addGeneratedSourceDirectory(generateLogo, GenerateLogo::outputDirectory)
     }

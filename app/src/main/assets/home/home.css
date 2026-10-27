@@ -14,8 +14,6 @@
 body { margin: 0; -webkit-tap-highlight-color: transparent; }
 main { max-width: 600px; margin: 0 auto; padding: 72px 24px 36px; padding-top: clamp(40px, 13vh, 112px); }
 .brand { display: flex; align-items: center; justify-content: center; margin-bottom: 30px; }
-.brand img { margin-right: 12px; background: #4e6ecd; border-radius: 12px; }
-h1 { font-size: 32px; line-height: 1.2; letter-spacing: -.8px; font-weight: 650; margin: 0; }
 .private-note { margin: -14px 0 26px; color: var(--muted); text-align: center; font-size: 13px; line-height: 1.6; }
 .search { display: flex; align-items: center; height: 54px; background: var(--surface); border: 1px solid var(--divider);
   border-radius: 14px; box-shadow: 0 4px 18px #0d172805; overflow: hidden; }

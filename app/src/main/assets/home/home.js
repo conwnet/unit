@@ -1,6 +1,5 @@
 (() => {
   'use strict';
-  const name = document.getElementById('name');
   const note = document.getElementById('private-note');
   const sites = document.getElementById('sites');
   const empty = document.getElementById('empty');
@@ -14,7 +13,6 @@
     }
     const strings = data.strings;
     document.documentElement.lang = data.language;
-    name.textContent = data.incognito ? strings.incognito : 'Unit';
     document.title = data.incognito ? strings.incognito : strings.home;
     note.textContent = strings.privateNote;
     input.placeholder = strings.addressHint;
