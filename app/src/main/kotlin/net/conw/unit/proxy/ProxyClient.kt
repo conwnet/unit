@@ -1,5 +1,6 @@
 package net.conw.unit.proxy
 
+import java.io.IOException
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.security.KeyStore
@@ -77,11 +78,21 @@ internal class ProxyClient(private val settings: ProxySettings) : Call.Factory {
             .build()
     }
 
+    internal class AuthenticationException : IOException("Proxy authentication failed")
+
     internal class ProxyAuthentication(private val settings: ProxySettings) : Authenticator {
         override fun authenticate(route: Route?, response: Response): Request? {
             if (route?.proxy?.type() != Proxy.Type.HTTP) return null
             // A 407 inside the origin's TLS connection is not a proxy challenge.
             if (response.request.url.isHttps && response.request.method != "CONNECT") return null
+            val request = authenticatedRequest(response)
+            if (request == null && response.code == 407 &&
+                !response.header("Proxy-Authenticate").equals("OkHttp-Preemptive", true))
+                throw AuthenticationException()
+            return request
+        }
+
+        private fun authenticatedRequest(response: Response): Request? {
             val previous = response.request.header("Proxy-Authorization")
             val challenges = response.challenges()
             val challenge =

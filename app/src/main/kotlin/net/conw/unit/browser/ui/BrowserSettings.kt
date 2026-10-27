@@ -112,11 +112,13 @@ internal class BrowserSettings(private val activity: BrowserActivity) {
         activity.showDialog(
             Ui.dialog(activity)
                 .setTitle(R.string.search_engine)
-                .setItems(engines) { _, which ->
+                .setSingleChoiceItems(engines, engines.indexOf(preferences.searchEngine)) { dialog, which ->
                     preferences.searchEngine = engines[which]
+                    dialog.dismiss()
                     activity.message(R.string.search_updated)
                     render()
                 }
+                .setNegativeButton(R.string.cancel, null)
                 .create()
         )
     }

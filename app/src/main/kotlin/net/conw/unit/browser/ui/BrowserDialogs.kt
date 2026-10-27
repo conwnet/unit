@@ -1,5 +1,6 @@
 package net.conw.unit.browser.ui
 
+import androidx.appcompat.app.AlertDialog
 import net.conw.unit.BrowserActivity
 import net.conw.unit.R
 import net.conw.unit.browser.UrlUtils
@@ -15,26 +16,32 @@ internal class BrowserDialogs(private val activity: BrowserActivity) {
         val box = Ui.form(activity)
         val name = Ui.textInput(activity, R.string.title, title ?: url)
         val address = Ui.textInput(activity, R.string.address, url, uri = true)
+        val addressInput = Ui.input(activity, address, R.string.address)
         box.addView(Ui.input(activity, name, R.string.title))
-        box.addView(Ui.input(activity, address, R.string.address))
-        activity.showDialog(
+        box.addView(addressInput)
+        val dialog =
             Ui.dialog(activity)
                 .setTitle(R.string.save_bookmark)
                 .setView(box)
-                .setPositiveButton(R.string.save) { _, _ ->
-                    val updated = address.text.toString().trim()
-                    if (!UrlUtils.isWeb(updated)) activity.message(R.string.invalid_address)
-                    else {
-                        if (editing && url != updated) activity.store.deletePage(true, url)
-                        activity.store.savePage(true, updated, name.text.toString())
-                        activity.message(R.string.bookmark_saved)
-                        activity.refreshHome()
-                        onSaved()
-                    }
-                }
+                .setPositiveButton(R.string.save, null)
                 .setNegativeButton(R.string.cancel, null)
                 .create()
-        )
+        activity.showDialog(dialog)
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+            val updated = address.text.toString().trim()
+            addressInput.error = null
+            if (!UrlUtils.isWeb(updated)) {
+                addressInput.error = activity.getString(R.string.invalid_address)
+                address.requestFocus()
+                return@setOnClickListener
+            }
+            if (editing && url != updated) activity.store.deletePage(true, url)
+            activity.store.savePage(true, updated, name.text.toString())
+            dialog.dismiss()
+            activity.message(R.string.bookmark_saved)
+            activity.refreshHome()
+            onSaved()
+        }
     }
 
     fun pages(bookmarks: Boolean) {

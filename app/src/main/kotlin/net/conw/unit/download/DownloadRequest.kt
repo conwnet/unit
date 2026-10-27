@@ -52,7 +52,7 @@ internal object DownloadRequest {
             if (response.code !in listOf(301, 302, 303, 307, 308)) {
                 if (response.isSuccessful) return response
                 response.close()
-                throw IOException(
+                throw Failure(
                     if (response.code == 407) context.getString(R.string.proxy_auth_error)
                     else "HTTP ${response.code}"
                 )
@@ -67,14 +67,16 @@ internal object DownloadRequest {
                     cookies.add(cookie)
                 }
                 if (++redirects > 10)
-                    throw IOException(context.getString(R.string.download_redirect_error))
-                val location = it.header("Location") ?: throw IOException("HTTP ${it.code}")
+                    throw Failure(context.getString(R.string.download_redirect_error))
+                val location = it.header("Location") ?: throw Failure("HTTP ${it.code}")
                 url =
                     url.resolve(location)
-                        ?: throw IOException(context.getString(R.string.unsupported_download))
+                        ?: throw Failure(context.getString(R.string.unsupported_download))
             }
         }
     }
+
+    class Failure(message: String) : IOException(message)
 
     data class Headers(
         val agent: String? = null,

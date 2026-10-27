@@ -179,7 +179,7 @@
     <string name="storage_required">需要存储权限</string>
     <string name="download_started">已开始下载</string>
     <string name="records">记录</string>
-    <string name="download_failed">无法开始下载</string>
+    <string name="download_failed">下载失败</string>
     <string name="completed">已完成</string>
     <string name="queued">等待中</string>
     <string name="failed">失败</string>

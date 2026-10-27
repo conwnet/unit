@@ -182,7 +182,7 @@
     <string name="storage_required">Storage permission is required</string>
     <string name="download_started">Download started</string>
     <string name="records">Records</string>
-    <string name="download_failed">Could not start download</string>
+    <string name="download_failed">Download failed</string>
     <string name="completed">Completed</string>
     <string name="queued">Queued</string>
     <string name="failed">Failed</string>

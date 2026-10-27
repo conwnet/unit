@@ -136,23 +136,28 @@ internal class DownloadsDialog(
 
     private fun confirmDelete(download: Download) {
         val deleteFile =
-            MaterialCheckBox(Ui.dialogContext(activity)).apply {
-                id = R.id.download_delete_file
-                setText(R.string.also_delete_file)
-                setTextColor(activity.getColor(R.color.text))
-                textSize = 14f
-                minimumHeight = Ui.dp(activity, 48)
-                isChecked = false
-            }
-        val content =
-            Ui.column(activity).apply {
-                setPadding(Ui.dp(activity, 24), Ui.dp(activity, 8), Ui.dp(activity, 24), 0)
-                addView(deleteFile, LinearLayout.LayoutParams(-1, -2))
+            download.uri?.let {
+                MaterialCheckBox(Ui.dialogContext(activity)).apply {
+                    id = R.id.download_delete_file
+                    setText(R.string.also_delete_file)
+                    setTextColor(activity.getColor(R.color.text))
+                    textSize = 14f
+                    minimumHeight = Ui.dp(activity, 48)
+                    isChecked = false
+                }
             }
         val dialog =
             Ui.dialog(activity)
                 .setTitle(R.string.remove_download_title)
-                .setView(content)
+                .apply {
+                    if (deleteFile != null)
+                        setView(
+                            Ui.column(activity).apply {
+                                setPadding(Ui.dp(activity, 24), Ui.dp(activity, 8), Ui.dp(activity, 24), 0)
+                                addView(deleteFile, LinearLayout.LayoutParams(-1, -2))
+                            }
+                        )
+                }
                 .setPositiveButton(R.string.remove, null)
                 .setNegativeButton(R.string.cancel, null)
                 .create()
@@ -160,10 +165,10 @@ internal class DownloadsDialog(
         val confirm = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
         val cancel = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
         confirm.setOnClickListener {
-            val includeFile = deleteFile.isChecked
+            val includeFile = deleteFile?.isChecked == true
             confirm.isEnabled = false
             cancel.isEnabled = false
-            deleteFile.isEnabled = false
+            deleteFile?.isEnabled = false
             dialog.setCancelable(false)
             fileWorkers.execute {
                 var failure = R.string.remove_download_failed
@@ -185,7 +190,7 @@ internal class DownloadsDialog(
                     else {
                         confirm.isEnabled = true
                         cancel.isEnabled = true
-                        deleteFile.isEnabled = true
+                        deleteFile?.isEnabled = true
                         dialog.setCancelable(true)
                         activity.message(failure)
                     }

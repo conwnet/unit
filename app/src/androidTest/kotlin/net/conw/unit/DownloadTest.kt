@@ -88,6 +88,7 @@ class DownloadTest {
         val row = start(http().copy(password = "wrong"), "http://proxy-target.test:8780/file.bin")
         val failed = await(row.id) { !it.state.isActive }
         assertEquals(DownloadState.FAILED, failed.state)
+        assertEquals(activity.getString(R.string.proxy_auth_error), failed.error)
         assertNull(failed.uri)
     }
 

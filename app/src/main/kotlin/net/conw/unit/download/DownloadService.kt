@@ -13,6 +13,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.util.Log
 import androidx.core.app.ServiceCompat
 import java.io.IOException
 import java.util.concurrent.Executors
@@ -224,7 +225,7 @@ class DownloadService : Service() {
                         }
                         checkCancelled()
                         if (row.total >= 0 && row.bytes != row.total)
-                            throw IOException(getString(R.string.download_incomplete))
+                            throw DownloadRequest.Failure(getString(R.string.download_incomplete))
                         row =
                             DownloadFiles.complete(this@DownloadService, row)
                                 .copy(state = DownloadState.COMPLETED)
@@ -234,8 +235,11 @@ class DownloadService : Service() {
             } catch (error: Exception) {
                 runCatching { DownloadFiles.delete(this@DownloadService, row) }
                 if (!cancelled) {
+                    Log.w("UnitDownload", "Download failed", error)
                     val reason =
                         when (error) {
+                            is ProxyClient.AuthenticationException -> getString(R.string.proxy_auth_error)
+                            is DownloadRequest.Failure -> error.message ?: getString(R.string.download_failed)
                             is javax.net.ssl.SSLException -> getString(R.string.invalid_certificate)
                             is java.net.SocketTimeoutException ->
                                 getString(R.string.download_timeout)
@@ -243,7 +247,6 @@ class DownloadService : Service() {
                                 getString(R.string.download_host_error)
                             is java.net.ConnectException ->
                                 getString(R.string.download_connection_error)
-                            is IOException -> error.message ?: getString(R.string.download_failed)
                             else -> getString(R.string.download_failed)
                         }
                     row =

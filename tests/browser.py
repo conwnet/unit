@@ -161,7 +161,10 @@ def remove_download(item):
     if row['state'] in ('QUEUED', 'RUNNING'):
         tap('Cancel')
     else:
-        tap('Delete'); tap('Also delete file'); tap('Remove')
+        tap('Delete')
+        if row['uri'] is not None:
+            tap('Also delete file')
+        tap('Remove')
     deadline = time.monotonic() + 8
     while time.monotonic() < deadline:
         if all(current['id'] != row['id'] for current in downloads()):
